@@ -5,10 +5,10 @@ export default [
   {
     name: 'strapi::cors',
     config: {
-      // Whitelist your frontend URL(s) here:
+      enabled: true,
       origin: [
         'https://consult-teligence-frontend.vercel.app',
-        'http://localhost:5173'        // if you also test locally
+        'http://localhost:5173',
       ],
       methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS','HEAD'],
       headers: ['Content-Type','Authorization','Origin','Accept'],
