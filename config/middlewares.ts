@@ -5,7 +5,6 @@ export default [
   {
     name: 'strapi::cors',
     config: {
-      enabled: true,
       // Whitelist your frontend URL(s) here:
       origin: [
         'https://consult-teligence-frontend.vercel.app/',

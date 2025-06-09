@@ -3,15 +3,15 @@ export default ({ env }) => ({
     secret: env('ADMIN_JWT_SECRET'),
   },
   apiToken: {
+    secrets: {
+      encryptionKey: env('ENCRYPTION_KEY')
+    },
     salt: env('API_TOKEN_SALT'),
   },
   transfer: {
     token: {
       salt: env('TRANSFER_TOKEN_SALT'),
     },
-  },
-  secrets: {
-    encryptionKey: env('ENCRYPTION_KEY'),
   },
   flags: {
     nps: env.bool('FLAG_NPS', true),
