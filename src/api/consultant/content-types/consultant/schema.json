@@ -1,0 +1,91 @@
+{
+  "kind": "collectionType",
+  "collectionName": "consultants",
+  "info": {
+    "singularName": "consultant",
+    "pluralName": "consultants",
+    "displayName": "Consultant"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "company": {
+      "type": "string"
+    },
+    "currentRole": {
+      "type": "string"
+    },
+    "functionalExpertise": {
+      "type": "json"
+    },
+    "geographicalExpertise": {
+      "type": "enumeration",
+      "enum": [
+        "North America",
+        "South America",
+        "Europe",
+        "Asia",
+        "Middle East",
+        "Oceania",
+        "Africa"
+      ]
+    },
+    "countryExpertise": {
+      "type": "string"
+    },
+    "rate": {
+      "type": "decimal"
+    },
+    "bio": {
+      "type": "richtext"
+    },
+    "education": {
+      "type": "string"
+    },
+    "certifications": {
+      "type": "json"
+    },
+    "languages": {
+      "type": "json"
+    },
+    "profileImage": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "contactInfo": {
+      "type": "component",
+      "component": "consultants.contact-info",
+      "repeatable": false
+    },
+    "availability": {
+      "type": "string"
+    },
+    "testimonials": {
+      "type": "component",
+      "component": "consultants.testimonials",
+      "repeatable": true
+    },
+    "caseStudies": {
+      "type": "component",
+      "component": "consultants.case-studies",
+      "repeatable": true
+    }
+  }
+}

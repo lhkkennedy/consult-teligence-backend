@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_consultants_contact_infos",
+  "info": {
+    "displayName": "contactInfo"
+  },
+  "options": {},
+  "attributes": {
+    "Email": {
+      "type": "string"
+    },
+    "Phone": {
+      "type": "string"
+    },
+    "LinkedIn": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

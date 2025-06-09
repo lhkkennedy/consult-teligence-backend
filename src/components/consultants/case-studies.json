@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_consultants_case_studies",
+  "info": {
+    "displayName": "caseStudies"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

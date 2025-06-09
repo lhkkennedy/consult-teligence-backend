@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_consultants_testimonials",
+  "info": {
+    "displayName": "testimonials"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "company": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
