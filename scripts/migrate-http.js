@@ -1,11 +1,12 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const fetch = require('node-fetch');    // v2
 const FormData = require('form-data')
 
-const LOCAL = 'http://localhost:1337';
-const REMOTE = 'https://consult-teligence-backend.onrender.com';
-const TOKEN  = '73a2a02d60ef8ed60ba805a163d7cdcb50ff7f4316c6a6a14e6b42400ea444f831b3a9fd64d67775a0f09e09b7bc6070cd694fa3ab9ff5be5720063ab1569d28f12e77c4fd2ff2b5b2f600e7858b9d127cecfc620e2eba6750a97454fa059e5d870cb012d5d7d45aa228a490e5111f90bc61fc336390b22473f8f748ff6971eb';
-const REMOTE_TOKEN = '637ce6074fd4a8a7727b82ee0cbc76de949b04bc49c53df758377b4405957a27050aa7bdac520c75535cab0607e95a3fe539d1cdc34590b8e5bd48e611dcfc31f28e4d6a86688255ed710f3bbc273e79c34f9bf2b24cc25e935c9e7658a7a49013f98bde1ab4c3808b3e112461fb12af810e74c1676e0dfdcbb54524eee00180'
-
+const REMOTE = process.env.REMOTE;
+const LOCAL = process.env.LOCAL;
+const TOKEN = process.env.TOKEN;
+const REMOTE_TOKEN = process.env.REMOTE_TOKEN;
 const TYPES = ['consultants','articles'];
 
 function fetchLocal(path, opts = {}) {

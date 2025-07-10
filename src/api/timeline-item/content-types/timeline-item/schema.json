@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "timeline_items",
+  "info": {
+    "singularName": "timeline-item",
+    "pluralName": "timeline-items",
+    "displayName": "Timeline Item"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "enum": ["post", "property", "event"]
+    },
+    "content": {
+      "type": "richtext"
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::consultant.consultant"
+    },
+    "property": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::property.property"
+    },
+    "visibility": {
+      "type": "enumeration",
+      "enum": ["public", "private", "profile-specific"]
+    }
+  }
+} 
