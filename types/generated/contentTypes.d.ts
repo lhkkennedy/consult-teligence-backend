@@ -422,7 +422,7 @@ export interface ApiConsultantConsultant extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     currentRole: Schema.Attribute.String;
-    education: Schema.Attribute.String;
+    education: Schema.Attribute.RichText;
     firstName: Schema.Attribute.String;
     functionalExpertise: Schema.Attribute.JSON;
     geographicalExpertise: Schema.Attribute.Enumeration<
@@ -454,6 +454,77 @@ export interface ApiConsultantConsultant extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPropertyProperty extends Struct.CollectionTypeSchema {
+  collectionName: 'properties';
+  info: {
+    displayName: 'Property';
+    pluralName: 'properties';
+    singularName: 'property';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.RichText;
+    images: Schema.Attribute.Media<'images', true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::property.property'
+    > &
+      Schema.Attribute.Private;
+    location: Schema.Attribute.String;
+    owner: Schema.Attribute.Relation<'manyToOne', 'api::consultant.consultant'>;
+    publishedAt: Schema.Attribute.DateTime;
+    tags: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTimelineItemTimelineItem
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'timeline_items';
+  info: {
+    displayName: 'Timeline Item';
+    pluralName: 'timeline-items';
+    singularName: 'timeline-item';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    author: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::consultant.consultant'
+    >;
+    content: Schema.Attribute.RichText;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::timeline-item.timeline-item'
+    > &
+      Schema.Attribute.Private;
+    property: Schema.Attribute.Relation<'manyToOne', 'api::property.property'>;
+    publishedAt: Schema.Attribute.DateTime;
+    type: Schema.Attribute.Enumeration<['post', 'property', 'event']>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    visibility: Schema.Attribute.Enumeration<
+      ['public', 'private', 'profile-specific']
+    >;
   };
 }
 
@@ -968,6 +1039,8 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::article.article': ApiArticleArticle;
       'api::consultant.consultant': ApiConsultantConsultant;
+      'api::property.property': ApiPropertyProperty;
+      'api::timeline-item.timeline-item': ApiTimelineItemTimelineItem;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;
