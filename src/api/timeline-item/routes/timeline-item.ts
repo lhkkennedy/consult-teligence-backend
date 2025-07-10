@@ -4,4 +4,13 @@
 
 import { factories } from '@strapi/strapi';
 
-export default factories.createCoreRouter('api::timeline-item.timeline-item'); 
+export default factories.createCoreRouter('api::timeline-item.timeline-item', {
+  config: {
+    update: {
+      policies: ['global::is-owner'],
+    },
+    delete: {
+      policies: ['global::is-owner'],
+    },
+  },
+}); 
