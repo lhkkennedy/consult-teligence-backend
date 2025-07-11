@@ -91,6 +91,18 @@
       "type": "component",
       "component": "consultants.case-studies",
       "repeatable": true
+    },
+    "total_gfa": {
+      "type": "integer"
+    },
+    "total_aum": {
+      "type": "decimal"
+    },
+    "deal_count": {
+      "type": "integer"
+    },
+    "avg_deal_size": {
+      "type": "decimal"
     }
   }
 }
