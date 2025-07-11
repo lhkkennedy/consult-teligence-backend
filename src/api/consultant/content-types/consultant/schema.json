@@ -96,13 +96,13 @@
       "type": "integer"
     },
     "total_aum": {
-      "type": "decimal"
+      "type": "integer"
     },
     "deal_count": {
       "type": "integer"
     },
     "avg_deal_size": {
-      "type": "decimal"
+      "type": "integer"
     }
   }
 }
