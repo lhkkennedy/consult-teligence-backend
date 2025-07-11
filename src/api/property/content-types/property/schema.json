@@ -11,19 +11,44 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "property_uid": {
+      "type": "string",
+      "unique": true
+    },
     "title": {
       "type": "string"
     },
-    "description": {
-      "type": "richtext"
+    "address": {
+      "type": "string"
     },
-    "location": {
+    "property_type": {
+      "type": "enumeration",
+      "enum": ["Industrial", "Office", "Retail", "Residential"]
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["Stabilised", "Under Construction", "Exited", "Planning"]
+    },
+    "headline_metric": {
       "type": "string"
     },
     "images": {
       "type": "media",
       "multiple": true,
       "allowedTypes": ["images"]
+    },
+    "roles": {
+      "type": "string",
+      "multiple": true
+    },
+    "deal_size": {
+      "type": "decimal"
+    },
+    "irr": {
+      "type": "decimal"
+    },
+    "completion_percentage": {
+      "type": "integer"
     },
     "owner": {
       "type": "relation",

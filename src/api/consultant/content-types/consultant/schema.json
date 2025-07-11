@@ -11,6 +11,11 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
     "firstName": {
       "type": "string"
     },

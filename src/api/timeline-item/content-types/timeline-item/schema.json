@@ -11,12 +11,36 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "type": {
-      "type": "enumeration",
-      "enum": ["post", "property", "event"]
+    "post_id": {
+      "type": "string",
+      "unique": true
     },
-    "content": {
-      "type": "richtext"
+    "created_at": {
+      "type": "datetime"
+    },
+    "body_md": {
+      "type": "text"
+    },
+    "media_urls": {
+      "type": "json"
+    },
+    "post_type": {
+      "type": "enumeration",
+      "enum": ["NewListing", "ProgressUpdate", "Insight", "Closing"]
+    },
+    "sentiment": {
+      "type": "enumeration",
+      "enum": ["Bull", "Neutral", "Bear"]
+    },
+    "visibility": {
+      "type": "enumeration",
+      "enum": ["Public", "Private", "ProfileSpecific"]
+    },
+    "reactions": {
+      "type": "json"
+    },
+    "comments": {
+      "type": "json"
     },
     "author": {
       "type": "relation",
@@ -28,9 +52,8 @@
       "relation": "manyToOne",
       "target": "api::property.property"
     },
-    "visibility": {
-      "type": "enumeration",
-      "enum": ["public", "private", "profile-specific"]
+    "property_uid": {
+      "type": "string"
     }
   }
 } 
