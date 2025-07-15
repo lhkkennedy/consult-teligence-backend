@@ -6,9 +6,8 @@ import { factories } from '@strapi/strapi'
 
 export default factories.createCoreController('api::timeline-item.timeline-item', ({ strapi }) => ({
   async create(ctx) {
-    console.log('CTX.STATE:', ctx.state);
     // If request is from an admin API token, allow and use the provided author
-    const isAdminToken = !!ctx.state.admin || ctx.state?.auth?.strategy === 'admin-api-token';
+    const isAdminToken = ctx.state?.auth?.strategy?.name === 'api-token';
 
     if (!isAdminToken) {
       // For normal users, require authentication and set author to user.id
