@@ -412,6 +412,7 @@ export interface ApiConsultantConsultant extends Struct.CollectionTypeSchema {
   };
   attributes: {
     availability: Schema.Attribute.String;
+    avg_deal_size: Schema.Attribute.Integer;
     bio: Schema.Attribute.RichText;
     caseStudies: Schema.Attribute.Component<'consultants.case-studies', true>;
     certifications: Schema.Attribute.JSON;
@@ -422,6 +423,7 @@ export interface ApiConsultantConsultant extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     currentRole: Schema.Attribute.String;
+    deal_count: Schema.Attribute.Integer;
     education: Schema.Attribute.RichText;
     firstName: Schema.Attribute.String;
     functionalExpertise: Schema.Attribute.JSON;
@@ -451,9 +453,15 @@ export interface ApiConsultantConsultant extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     rate: Schema.Attribute.Decimal;
     testimonials: Schema.Attribute.Component<'consultants.testimonials', true>;
+    total_aum: Schema.Attribute.Integer;
+    total_gfa: Schema.Attribute.Integer;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
   };
 }
 
@@ -468,20 +476,31 @@ export interface ApiPropertyProperty extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    address: Schema.Attribute.String;
+    completion_percentage: Schema.Attribute.Integer;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    description: Schema.Attribute.RichText;
+    deal_size: Schema.Attribute.Decimal;
+    headline_metric: Schema.Attribute.String;
     images: Schema.Attribute.Media<'images', true>;
+    irr: Schema.Attribute.Decimal;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::property.property'
     > &
       Schema.Attribute.Private;
-    location: Schema.Attribute.String;
     owner: Schema.Attribute.Relation<'manyToOne', 'api::consultant.consultant'>;
+    property_type: Schema.Attribute.Enumeration<
+      ['Industrial', 'Office', 'Retail', 'Residential']
+    >;
+    property_uid: Schema.Attribute.String & Schema.Attribute.Unique;
     publishedAt: Schema.Attribute.DateTime;
+    roles: Schema.Attribute.String;
+    status: Schema.Attribute.Enumeration<
+      ['Stabilised', 'Under Construction', 'Exited', 'Planning']
+    >;
     tags: Schema.Attribute.String;
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
@@ -506,7 +525,9 @@ export interface ApiTimelineItemTimelineItem
       'manyToOne',
       'api::consultant.consultant'
     >;
-    content: Schema.Attribute.RichText;
+    body_md: Schema.Attribute.Text;
+    comments: Schema.Attribute.JSON;
+    created_at: Schema.Attribute.DateTime;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -516,14 +537,21 @@ export interface ApiTimelineItemTimelineItem
       'api::timeline-item.timeline-item'
     > &
       Schema.Attribute.Private;
+    media_urls: Schema.Attribute.JSON;
+    post_id: Schema.Attribute.String & Schema.Attribute.Unique;
+    post_type: Schema.Attribute.Enumeration<
+      ['NewListing', 'ProgressUpdate', 'Insight', 'Closing']
+    >;
     property: Schema.Attribute.Relation<'manyToOne', 'api::property.property'>;
+    property_uid: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
-    type: Schema.Attribute.Enumeration<['post', 'property', 'event']>;
+    reactions: Schema.Attribute.JSON;
+    sentiment: Schema.Attribute.Enumeration<['Bull', 'Neutral', 'Bear']>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     visibility: Schema.Attribute.Enumeration<
-      ['public', 'private', 'profile-specific']
+      ['Public', 'Private', 'ProfileSpecific']
     >;
   };
 }
