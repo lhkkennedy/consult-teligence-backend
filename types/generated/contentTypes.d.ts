@@ -473,7 +473,7 @@ export interface ApiPropertyProperty extends Struct.CollectionTypeSchema {
     singularName: 'property';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     address: Schema.Attribute.String;
@@ -518,7 +518,7 @@ export interface ApiTimelineItemTimelineItem
     singularName: 'timeline-item';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     author: Schema.Attribute.Relation<
