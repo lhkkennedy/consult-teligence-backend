@@ -21,9 +21,9 @@ export default {
       models: ["plugin::users-permissions.user"],
       async afterCreate(event) {
         const { result } = event;
-        console.log("afterCreate fired for user:", result.id);
+        console.log("afterCreate fired for user:", result);
         try {
-          await strapi.db
+          const consultant = await strapi.db
             .query("api::consultant.consultant")
             .create({
               data: {
@@ -32,7 +32,7 @@ export default {
                 firstName: result.username,
               },
             });
-            console.log("Consultant created for user:", result.id);
+          console.log("Consultant creation response:", consultant);
         } catch (err) {
           strapi.log.error("Failed to create consultant for user", err);
         }
