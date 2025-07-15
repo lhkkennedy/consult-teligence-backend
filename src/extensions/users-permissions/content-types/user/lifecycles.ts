@@ -4,7 +4,7 @@ export default {
     const userId = result.id;
 
     // Create a consultant entry linked to this user
-    await strapi.entityService.create('api::consultant.consultant', {
+    await strapi.service('api::consultant.consultant').create({
       data: {
         user: userId,
         // Optionally, copy over fields from the user or set defaults
