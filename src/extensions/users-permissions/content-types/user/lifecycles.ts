@@ -3,14 +3,18 @@ export default {
     const { result } = event;
     const userId = result.id;
 
-    // Create a consultant entry linked to this user
-    await strapi.service('api::consultant.consultant').create({
-      data: {
-        user: userId,
-        // Optionally, copy over fields from the user or set defaults
-        firstName: result.username, // or result.firstname if you have it
-        // ...other fields as needed
-      },
-    });
+    console.log('afterCreate lifecycle triggered for user:', userId);
+
+    try {
+      const consultant = await strapi.service('api::consultant.consultant').create({
+        data: {
+          user: userId,
+          firstName: result.username,
+        },
+      });
+      console.log('Consultant created:', consultant);
+    } catch (err) {
+      console.error('Error creating consultant:', err);
+    }
   },
 }; 
