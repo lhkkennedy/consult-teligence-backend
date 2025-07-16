@@ -1,0 +1,46 @@
+[
+  {
+    "post_id": "post6_1",
+    "person_id": "p_601",
+    "created_at": "2024-07-01T08:00:00Z",
+    "body_md": "Halfway milestone reached at **Rio Business Complex**. On track for Q1 2025 delivery.",
+    "media_urls": [
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800"
+    ],
+    "property_uid": "pr_BR.RIOCOMPLEX01",
+    "post_type": "ProgressUpdate",
+    "sentiment": "Bull",
+    "visibility": "Public",
+    "reactions": [
+      {
+        "id": "r61",
+        "user_id": "u61",
+        "reaction_type": "like",
+        "created_at": "2024-07-01T08:30:00Z"
+      }
+    ],
+    "comments": []
+  },
+  {
+    "post_id": "post6_2",
+    "person_id": "p_602",
+    "created_at": "2024-07-10T12:00:00Z",
+    "body_md": "Excited to announce **Copacabana Residences**—luxury living in Rio. Sales open soon.",
+    "media_urls": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800"
+    ],
+    "property_uid": "pr_BR.COPACABANARES01",
+    "post_type": "NewListing",
+    "sentiment": "Bull",
+    "visibility": "Public",
+    "reactions": [
+      {
+        "id": "r62",
+        "user_id": "u62",
+        "reaction_type": "celebrate",
+        "created_at": "2024-07-10T12:30:00Z"
+      }
+    ],
+    "comments": []
+  }
+]

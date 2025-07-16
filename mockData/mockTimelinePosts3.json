@@ -1,0 +1,68 @@
+[
+  {
+    "post_id": "post3_1",
+    "person_id": "p_301",
+    "created_at": "2024-04-01T11:00:00Z",
+    "body_md": "Groundbreaking ceremony for **Sunset Villas**! Excited to bring luxury living to Miami.",
+    "media_urls": [
+      "https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?w=800"
+    ],
+    "property_uid": "pr_USA.SUNSETVILLAS01",
+    "post_type": "NewListing",
+    "sentiment": "Bull",
+    "visibility": "Public",
+    "reactions": [
+      {
+        "id": "r31",
+        "user_id": "u31",
+        "reaction_type": "celebrate",
+        "created_at": "2024-04-01T11:30:00Z"
+      }
+    ],
+    "comments": []
+  },
+  {
+    "post_id": "post3_2",
+    "person_id": "p_302",
+    "created_at": "2024-04-10T16:45:00Z",
+    "body_md": "**Bay Tower** construction update: steel structure is up, 30% complete. Leasing interest is strong.",
+    "media_urls": [
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800"
+    ],
+    "property_uid": "pr_USA.BAYTOWER01",
+    "post_type": "ProgressUpdate",
+    "sentiment": "Bull",
+    "visibility": "Public",
+    "reactions": [
+      {
+        "id": "r32",
+        "user_id": "u32",
+        "reaction_type": "like",
+        "created_at": "2024-04-10T17:00:00Z"
+      }
+    ],
+    "comments": []
+  },
+  {
+    "post_id": "post3_3",
+    "person_id": "p_303",
+    "created_at": "2024-04-15T13:20:00Z",
+    "body_md": "**Market Plaza** is now fully leased! Thanks to our team and tenants for making this a success.",
+    "media_urls": [
+      "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800"
+    ],
+    "property_uid": "pr_USA.MARKETPLAZA01",
+    "post_type": "Closing",
+    "sentiment": "Bull",
+    "visibility": "Public",
+    "reactions": [
+      {
+        "id": "r33",
+        "user_id": "u33",
+        "reaction_type": "love",
+        "created_at": "2024-04-15T14:00:00Z"
+      }
+    ],
+    "comments": []
+  }
+]

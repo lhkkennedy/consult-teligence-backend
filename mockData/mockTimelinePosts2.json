@@ -1,0 +1,55 @@
+[
+  {
+    "post_id": "post2_1",
+    "person_id": "p_201",
+    "created_at": "2024-03-12T09:00:00Z",
+    "body_md": "Excavation complete at **Paris Loft Apartments**. Construction is on schedule for Q2 2025 delivery.",
+    "media_urls": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800"
+    ],
+    "property_uid": "pr_FR.PARISLOFT01",
+    "post_type": "ProgressUpdate",
+    "sentiment": "Bull",
+    "visibility": "Public",
+    "reactions": [
+      {
+        "id": "r21",
+        "user_id": "u21",
+        "reaction_type": "like",
+        "created_at": "2024-03-12T09:30:00Z"
+      }
+    ],
+    "comments": [
+      {
+        "id": "c21",
+        "user_id": "u22",
+        "body": "Will there be penthouse units available?",
+        "created_at": "2024-03-12T10:00:00Z",
+        "user_name": "Marie Dubois",
+        "user_avatar": "https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100"
+      }
+    ]
+  },
+  {
+    "post_id": "post2_2",
+    "person_id": "p_202",
+    "created_at": "2024-03-15T14:20:00Z",
+    "body_md": "**Business Park La Défense** reaches 98% occupancy. Welcoming our newest tenant, a leading fintech firm.",
+    "media_urls": [
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800"
+    ],
+    "property_uid": "pr_FR.BUSINESSPARK01",
+    "post_type": "Insight",
+    "sentiment": "Bull",
+    "visibility": "Public",
+    "reactions": [
+      {
+        "id": "r22",
+        "user_id": "u23",
+        "reaction_type": "celebrate",
+        "created_at": "2024-03-15T15:00:00Z"
+      }
+    ],
+    "comments": []
+  }
+]

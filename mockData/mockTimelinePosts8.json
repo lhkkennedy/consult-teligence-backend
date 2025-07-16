@@ -1,0 +1,46 @@
+[
+  {
+    "post_id": "post8_1",
+    "person_id": "p_801",
+    "created_at": "2024-09-01T09:00:00Z",
+    "body_md": "Planning underway for **Toronto Centre Residences**. Sales to open in October.",
+    "media_urls": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800"
+    ],
+    "property_uid": "pr_CA.TORONTOCENTRE01",
+    "post_type": "NewListing",
+    "sentiment": "Bull",
+    "visibility": "Public",
+    "reactions": [
+      {
+        "id": "r81",
+        "user_id": "u81",
+        "reaction_type": "celebrate",
+        "created_at": "2024-09-01T09:30:00Z"
+      }
+    ],
+    "comments": []
+  },
+  {
+    "post_id": "post8_2",
+    "person_id": "p_802",
+    "created_at": "2024-09-10T12:00:00Z",
+    "body_md": "Construction at **Bay Street Tower** reaches 40%. Leasing interest is high.",
+    "media_urls": [
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800"
+    ],
+    "property_uid": "pr_CA.BAYSTREETTOWER01",
+    "post_type": "ProgressUpdate",
+    "sentiment": "Bull",
+    "visibility": "Public",
+    "reactions": [
+      {
+        "id": "r82",
+        "user_id": "u82",
+        "reaction_type": "like",
+        "created_at": "2024-09-10T12:30:00Z"
+      }
+    ],
+    "comments": []
+  }
+]

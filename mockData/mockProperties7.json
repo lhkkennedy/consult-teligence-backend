@@ -1,0 +1,35 @@
+[
+  {
+    "property_uid": "pr_DE.BERLINLOFTS01",
+    "title": "Berlin Lofts",
+    "address": "10 Alexanderplatz, Berlin",
+    "property_type": "Residential",
+    "status": "Under Construction",
+    "headline_metric": "70% complete",
+    "images": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800"
+    ],
+    "roles": [
+      "Developer"
+    ],
+    "deal_size": 36000000,
+    "completion_percentage": 70
+  },
+  {
+    "property_uid": "pr_DE.MITTEOFFICE01",
+    "title": "Mitte Office Center",
+    "address": "20 Friedrichstrasse, Berlin",
+    "property_type": "Office",
+    "status": "Planning",
+    "headline_metric": "Planning phase",
+    "images": [
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800"
+    ],
+    "roles": [
+      "Developer",
+      "Legal Counsel"
+    ],
+    "deal_size": 31000000,
+    "completion_percentage": 15
+  }
+]

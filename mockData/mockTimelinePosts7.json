@@ -1,0 +1,46 @@
+[
+  {
+    "post_id": "post7_1",
+    "person_id": "p_701",
+    "created_at": "2024-08-01T10:00:00Z",
+    "body_md": "Construction at **Berlin Lofts** is 70% complete. Move-in expected by December.",
+    "media_urls": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800"
+    ],
+    "property_uid": "pr_DE.BERLINLOFTS01",
+    "post_type": "ProgressUpdate",
+    "sentiment": "Bull",
+    "visibility": "Public",
+    "reactions": [
+      {
+        "id": "r71",
+        "user_id": "u71",
+        "reaction_type": "like",
+        "created_at": "2024-08-01T10:30:00Z"
+      }
+    ],
+    "comments": []
+  },
+  {
+    "post_id": "post7_2",
+    "person_id": "p_702",
+    "created_at": "2024-08-10T14:00:00Z",
+    "body_md": "Introducing **Mitte Office Center**—a new business hub in Berlin. Leasing opens soon.",
+    "media_urls": [
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800"
+    ],
+    "property_uid": "pr_DE.MITTEOFFICE01",
+    "post_type": "NewListing",
+    "sentiment": "Bull",
+    "visibility": "Public",
+    "reactions": [
+      {
+        "id": "r72",
+        "user_id": "u72",
+        "reaction_type": "celebrate",
+        "created_at": "2024-08-10T14:30:00Z"
+      }
+    ],
+    "comments": []
+  }
+]

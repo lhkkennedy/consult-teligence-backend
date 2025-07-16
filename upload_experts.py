@@ -7,6 +7,7 @@ from io import BytesIO
 from pathlib import Path
 import re
 import random
+import glob
 
 load_dotenv()  # loads STRAPI_URL and STRAPI_TOKEN from .env
 
@@ -364,17 +365,90 @@ def generate_random_case_studies():
     num_cases = random.randint(1, 2)
     return random.sample(case_study_templates, num_cases)
 
+PROPERTY_TITLES = [
+    "Harborview Retail Center",
+    "Riverside Office Complex",
+    "Dockside Industrial Park",
+    "Urban Living Residences",
+    "Sunset Plaza",
+    "Greenfield Logistics Hub",
+    "Central Business Tower",
+    "Lakeside Apartments",
+    "Innovation Park",
+    "Market Square Offices",
+    "City Center Mall",
+    "Grandview Estates",
+    "Tech Valley Campus",
+    "Summit Heights",
+    "Parkside Villas"
+]
+
+def create_property_for_consultant(consultant_id, consultant_doc_id, property_idx=1):
+    payload = {
+        "title": f"{random.choice(PROPERTY_TITLES)} {random.choice(['London', 'Manchester', 'Birmingham', 'Leeds', 'Liverpool'])} {random.randint(1, 99)}",
+        "address": f"{random.randint(1,999)} Example St, City {property_idx}",
+        "property_uid": f"pr_{consultant_doc_id}_{property_idx}",
+        "property_type": random.choice(["Industrial", "Office", "Retail", "Residential"]),
+        "status": random.choice(["Stabilised", "Under Construction", "Exited", "Planning"]),
+        "headline_metric": f"{random.randint(4,8)}% cap rate",
+        "deal_size": random.randint(1000000, 50000000),
+        "irr": round(random.uniform(8, 20), 2),
+        "completion_percentage": random.randint(10, 100),
+        "owner": consultant_id,  # This links the property to the consultant
+        "roles": ", ".join(random.sample(["Developer", "Asset Manager", "Broker", "Investor", "Legal Counsel"], k=random.randint(1,2))),
+        "tags": ", ".join(random.sample(["Prime", "Investment", "Luxury", "Affordable", "Green"], k=random.randint(1,2)))
+    }
+    res = requests.post(f"{STRAPI_URL}/api/properties", headers=HEADERS_JSON, json={"data": payload})
+    print("Property creation response:", res.status_code, res.text)
+    res.raise_for_status()
+    return res.json()["data"]["id"], payload["property_uid"]
+
+def create_timeline_item_for_consultant(consultant_id, property_id, property_uid, idx=1):
+    payload = {
+        "post_id": f"post_{consultant_id}_{idx}",
+        "created_at": pd.Timestamp.now().isoformat(),
+        "body_md": f"Timeline post {idx} for consultant {consultant_id} about property {property_uid}.",
+        "media_urls": [],
+        "post_type": random.choice(["NewListing", "ProgressUpdate", "Insight", "Closing"]),
+        "sentiment": random.choice(["Bull", "Neutral", "Bear"]),
+        "visibility": random.choice(["Public", "Private", "ProfileSpecific"]),
+        "author": consultant_id,
+        "property": property_id,
+        "property_uid": property_uid
+    }
+    res = requests.post(f"{STRAPI_URL}/api/timeline-items", headers=HEADERS_JSON, json={"data": payload})
+    print("Timeline creation response:", res.status_code, res.text)
+    res.raise_for_status()
+    return res.json()["data"]["id"]
+
+# Utility to load mock data for a given number
+def load_mock_data(n):
+    base_dir = SCRIPT_DIR / 'mockData'
+    stats_path = base_dir / f"mockPortfolioStats{n}.json"
+    properties_path = base_dir / f"mockProperties{n}.json"
+    timeline_path = base_dir / f"mockTimelinePosts{n}.json"
+    with open(stats_path, 'r', encoding='utf-8') as f:
+        stats = json.load(f)
+    with open(properties_path, 'r', encoding='utf-8') as f:
+        properties = json.load(f)
+    with open(timeline_path, 'r', encoding='utf-8') as f:
+        timeline = json.load(f)
+    return stats, properties, timeline
 
 # Main loop
 # Replace this section in your main loop:
-for idx, row in df.iterrows():
+for idx_int, (idx, row) in enumerate(df.iterrows(), start=2):
     firstName = row.get('First Name') or ''
     lastName = row.get('Last Name') or ''
     if not firstName or not lastName:
-        print(f"Row {idx+2}: missing first or last name; skipping")
+        print(f"Row {idx_int}: missing first or last name; skipping")
         continue
     firstName = firstName.strip()
     lastName = lastName.strip()
+
+    # Pick a random number 1-8 for this consultant
+    mock_n = random.randint(1, 8)
+    stats, properties, timeline_posts = load_mock_data(mock_n)
 
     # Simple text fields - FIXED COLUMN NAMES
     location = row.get('locations')
@@ -402,7 +476,7 @@ for idx, row in df.iterrows():
             rate_str = str(rate_cell).replace('$', '').replace('£', '').replace(',', '').strip()
             rate = float(rate_str)
         except:
-            print(f"Row {idx+2}: cannot parse rate '{rate_cell}'; skipping rate")
+            print(f"Row {idx_int}: cannot parse rate '{rate_cell}'; skipping rate")
 
     bio = row.get('post_content') or ''  # was 'bio' or 'Bio'
     education = row.get('educational_requirement')
@@ -489,21 +563,67 @@ for idx, row in df.iterrows():
     if existing:
         existing_id    = existing['id']
         existing_docId = existing.get('documentId')
-        print(f"Row {idx+2}: updating existing expert ID {existing_id}")
+        print(f"Row {idx_int}: updating existing expert ID {existing_docId}")
         body = {'data': payload}
-        res  = requests.put(f"{STRAPI_URL}/api/{COLLECTION}/{existing_id}",
+        res  = requests.put(f"{STRAPI_URL}/api/{COLLECTION}/{existing_docId}",
                             headers=HEADERS_JSON, json=body, timeout=30)
         res.raise_for_status()
+        consultant_id = existing_id
+        consultant_doc_id = existing_docId
     else:
         existing_id    = None
         existing_docId = None
-        print(f"Row {idx+2}: creating new expert {firstName} {lastName}")
+        print(f"Row {idx_int}: creating new expert {firstName} {lastName}")
         body = {'data': payload}
         print("HEADERS_JSON: ", HEADERS_JSON)
         print("BODY: ", body)
         res  = requests.post(f"{STRAPI_URL}/api/{COLLECTION}",headers=HEADERS_JSON, json=body, timeout=30)
         print("STATUS CODE:", res.status_code)
         print("RESPONSE BODY:", res.text)
+        res.raise_for_status()
+        consultant_id = res.json()["data"]["id"]
+        consultant_doc_id = res.json()["data"]["documentId"]
+
+    # Create properties for this consultant using mock data
+    property_ids = []
+    property_uids = []
+    for prop in properties:
+        prop_payload = dict(prop)  # shallow copy
+        prop_payload['owner'] = consultant_id
+        # Remove images field if present (Strapi may not accept it directly)
+        prop_payload.pop('images', None)
+        # Ensure 'roles' and 'tags' are strings
+        if isinstance(prop_payload.get('roles'), list):
+            prop_payload['roles'] = ', '.join(str(r) for r in prop_payload['roles'])
+        if isinstance(prop_payload.get('tags'), list):
+            prop_payload['tags'] = ', '.join(str(t) for t in prop_payload['tags'])
+        # Make property_uid unique
+        orig_uid = prop_payload.get('property_uid', '')
+        prop_payload['property_uid'] = f"{orig_uid}_{consultant_doc_id}"
+        res = requests.post(f"{STRAPI_URL}/api/properties", headers=HEADERS_JSON, json={"data": prop_payload})
+        print("Property creation response:", res.status_code, res.text)
+        res.raise_for_status()
+        property_id = res.json()["data"]["id"]
+        property_uid = prop.get('property_uid')
+        property_ids.append(property_id)
+        property_uids.append(property_uid)
+    # Map property_uid to property_id for timeline linking
+    property_uid_to_id = dict(zip(property_uids, property_ids))
+    # Create timeline items for each property using mock data
+    for post in timeline_posts:
+        post_payload = dict(post)
+        post_payload['author'] = consultant_id
+        # Link property if property_uid is present
+        prop_uid = post.get('property_uid')
+        if prop_uid and prop_uid in property_uid_to_id:
+            post_payload['property'] = property_uid_to_id[prop_uid]
+        # Remove fields not in Strapi model if needed
+        post_payload.pop('person_id', None)
+        # Make post_id unique
+        orig_post_id = post_payload.get('post_id', '')
+        post_payload['post_id'] = f"{orig_post_id}_{consultant_doc_id}"
+        res = requests.post(f"{STRAPI_URL}/api/timeline-items", headers=HEADERS_JSON, json={"data": post_payload})
+        print("Timeline creation response:", res.status_code, res.text)
         res.raise_for_status()
 
 print("Done.")

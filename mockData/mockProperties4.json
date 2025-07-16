@@ -1,0 +1,35 @@
+[
+  {
+    "property_uid": "pr_JP.TOKYOTOWER01",
+    "title": "Tokyo Tower Residences",
+    "address": "1-1-2 Oshiage, Sumida City, Tokyo",
+    "property_type": "Residential",
+    "status": "Under Construction",
+    "headline_metric": "80% complete",
+    "images": [
+      "https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?w=800"
+    ],
+    "roles": [
+      "Developer"
+    ],
+    "deal_size": 41000000,
+    "completion_percentage": 80
+  },
+  {
+    "property_uid": "pr_JP.SHIBUYAHUB01",
+    "title": "Shibuya Tech Hub",
+    "address": "2-24-12 Shibuya, Tokyo",
+    "property_type": "Office",
+    "status": "Planning",
+    "headline_metric": "Planning phase",
+    "images": [
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800"
+    ],
+    "roles": [
+      "Developer",
+      "Legal Counsel"
+    ],
+    "deal_size": 37000000,
+    "completion_percentage": 10
+  }
+]

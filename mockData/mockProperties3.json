@@ -1,0 +1,52 @@
+[
+  {
+    "property_uid": "pr_USA.SUNSETVILLAS01",
+    "title": "Sunset Villas",
+    "address": "789 Palm Dr, Miami, FL",
+    "property_type": "Residential",
+    "status": "Planning",
+    "headline_metric": "Planning phase",
+    "images": [
+      "https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?w=800"
+    ],
+    "roles": [
+      "Developer",
+      "Legal Counsel"
+    ],
+    "deal_size": 25000000,
+    "completion_percentage": 5
+  },
+  {
+    "property_uid": "pr_USA.BAYTOWER01",
+    "title": "Bay Tower",
+    "address": "300 Bay St, San Francisco, CA",
+    "property_type": "Office",
+    "status": "Under Construction",
+    "headline_metric": "30% complete",
+    "images": [
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800"
+    ],
+    "roles": [
+      "Developer"
+    ],
+    "deal_size": 47000000,
+    "completion_percentage": 30
+  },
+  {
+    "property_uid": "pr_USA.MARKETPLAZA01",
+    "title": "Market Plaza",
+    "address": "100 Market St, Dallas, TX",
+    "property_type": "Retail",
+    "status": "Stabilised",
+    "headline_metric": "Fully leased",
+    "images": [
+      "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800"
+    ],
+    "roles": [
+      "Asset Manager"
+    ],
+    "deal_size": 39000000,
+    "irr": 13.2,
+    "completion_percentage": 100
+  }
+]

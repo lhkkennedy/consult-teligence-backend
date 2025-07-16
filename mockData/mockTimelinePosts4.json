@@ -1,0 +1,46 @@
+[
+  {
+    "post_id": "post4_1",
+    "person_id": "p_401",
+    "created_at": "2024-05-01T10:00:00Z",
+    "body_md": "Final floors being completed at **Tokyo Tower Residences**. Move-in expected by September.",
+    "media_urls": [
+      "https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?w=800"
+    ],
+    "property_uid": "pr_JP.TOKYOTOWER01",
+    "post_type": "ProgressUpdate",
+    "sentiment": "Bull",
+    "visibility": "Public",
+    "reactions": [
+      {
+        "id": "r41",
+        "user_id": "u41",
+        "reaction_type": "like",
+        "created_at": "2024-05-01T10:30:00Z"
+      }
+    ],
+    "comments": []
+  },
+  {
+    "post_id": "post4_2",
+    "person_id": "p_402",
+    "created_at": "2024-05-10T15:00:00Z",
+    "body_md": "Announcing the **Shibuya Tech Hub** project. A new center for innovation in Tokyo.",
+    "media_urls": [
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800"
+    ],
+    "property_uid": "pr_JP.SHIBUYAHUB01",
+    "post_type": "NewListing",
+    "sentiment": "Bull",
+    "visibility": "Public",
+    "reactions": [
+      {
+        "id": "r42",
+        "user_id": "u42",
+        "reaction_type": "celebrate",
+        "created_at": "2024-05-10T15:30:00Z"
+      }
+    ],
+    "comments": []
+  }
+]

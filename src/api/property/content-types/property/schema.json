@@ -32,10 +32,8 @@
     "headline_metric": {
       "type": "string"
     },
-    "images": {
-      "type": "media",
-      "multiple": true,
-      "allowedTypes": ["images"]
+    "media_urls": {
+      "type": "json"
     },
     "roles": {
       "type": "string",

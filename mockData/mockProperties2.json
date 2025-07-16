@@ -1,0 +1,35 @@
+[
+  {
+    "property_uid": "pr_FR.PARISLOFT01",
+    "title": "Paris Loft Apartments",
+    "address": "12 Rue de Rivoli, Paris",
+    "property_type": "Residential",
+    "status": "Under Construction",
+    "headline_metric": "60% sold",
+    "images": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800"
+    ],
+    "roles": [
+      "Developer"
+    ],
+    "deal_size": 32000000,
+    "completion_percentage": 60
+  },
+  {
+    "property_uid": "pr_FR.BUSINESSPARK01",
+    "title": "Business Park La Défense",
+    "address": "45 Avenue de l’Arche, Courbevoie",
+    "property_type": "Office",
+    "status": "Stabilised",
+    "headline_metric": "98% occupancy",
+    "images": [
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800"
+    ],
+    "roles": [
+      "Asset Manager"
+    ],
+    "deal_size": 54000000,
+    "irr": 10.8,
+    "completion_percentage": 100
+  }
+]

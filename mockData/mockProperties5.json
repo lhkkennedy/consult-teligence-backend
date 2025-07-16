@@ -1,0 +1,35 @@
+[
+  {
+    "property_uid": "pr_AU.SYDNEYWHARF01",
+    "title": "Sydney Wharf Offices",
+    "address": "88 Wharf Rd, Sydney",
+    "property_type": "Office",
+    "status": "Stabilised",
+    "headline_metric": "100% leased",
+    "images": [
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800"
+    ],
+    "roles": [
+      "Asset Manager"
+    ],
+    "deal_size": 52000000,
+    "irr": 11.5,
+    "completion_percentage": 100
+  },
+  {
+    "property_uid": "pr_AU.BONDIRESIDENCE01",
+    "title": "Bondi Beach Residences",
+    "address": "101 Campbell Parade, Bondi Beach",
+    "property_type": "Residential",
+    "status": "Planning",
+    "headline_metric": "Planning phase",
+    "images": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800"
+    ],
+    "roles": [
+      "Developer"
+    ],
+    "deal_size": 34000000,
+    "completion_percentage": 5
+  }
+]

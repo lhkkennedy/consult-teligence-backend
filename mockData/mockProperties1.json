@@ -1,0 +1,73 @@
+[
+  {
+    "property_uid": "pr_DE.ZH6XWP83",
+    "title": "Dockside Industrial Park",
+    "address": "45 Fenchurch St, London EC3",
+    "property_type": "Industrial",
+    "status": "Stabilised",
+    "headline_metric": "5.25% cap rate",
+    "images": [
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800",
+      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800"
+    ],
+    "roles": [
+      "Developer",
+      "Asset Manager"
+    ],
+    "deal_size": 22000000,
+    "irr": 12.5,
+    "completion_percentage": 100
+  },
+  {
+    "property_uid": "pr_DE.RIVERSIDE01",
+    "title": "Riverside Office Complex",
+    "address": "123 Riverside Dr, Manchester M1",
+    "property_type": "Office",
+    "status": "Under Construction",
+    "headline_metric": "75% complete",
+    "images": [
+      "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800",
+      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800"
+    ],
+    "roles": [
+      "Developer"
+    ],
+    "deal_size": 35000000,
+    "completion_percentage": 75
+  },
+  {
+    "property_uid": "pr_DE.HARBORVIEW01",
+    "title": "Harborview Retail Center",
+    "address": "789 Harbor Blvd, Liverpool L1",
+    "property_type": "Retail",
+    "status": "Exited",
+    "headline_metric": "Sold at 4.8% cap",
+    "images": [
+      "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800"
+    ],
+    "roles": [
+      "Broker",
+      "Investor"
+    ],
+    "deal_size": 45000000,
+    "irr": 18.2,
+    "completion_percentage": 100
+  },
+  {
+    "property_uid": "pr_DE.URBANLIVING01",
+    "title": "Urban Living Residences",
+    "address": "456 City Center Ave, Birmingham B1",
+    "property_type": "Residential",
+    "status": "Planning",
+    "headline_metric": "Planning phase",
+    "images": [
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800"
+    ],
+    "roles": [
+      "Developer",
+      "Legal Counsel"
+    ],
+    "deal_size": 28000000,
+    "completion_percentage": 10
+  }
+]

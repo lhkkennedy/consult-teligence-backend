@@ -1,0 +1,34 @@
+[
+  {
+    "property_uid": "pr_CA.TORONTOCENTRE01",
+    "title": "Toronto Centre Residences",
+    "address": "123 Yonge St, Toronto",
+    "property_type": "Residential",
+    "status": "Planning",
+    "headline_metric": "Planning phase",
+    "images": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800"
+    ],
+    "roles": [
+      "Developer"
+    ],
+    "deal_size": 29000000,
+    "completion_percentage": 10
+  },
+  {
+    "property_uid": "pr_CA.BAYSTREETTOWER01",
+    "title": "Bay Street Tower",
+    "address": "200 Bay St, Toronto",
+    "property_type": "Office",
+    "status": "Under Construction",
+    "headline_metric": "40% complete",
+    "images": [
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800"
+    ],
+    "roles": [
+      "Developer"
+    ],
+    "deal_size": 43000000,
+    "completion_percentage": 40
+  }
+]
