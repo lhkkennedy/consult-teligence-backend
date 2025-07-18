@@ -2,7 +2,7 @@
   "kind": "collectionType",
   "collectionName": "friends",
   "info": {
-    "singularName": "friends",
+    "singularName": "friend",
     "pluralName": "friends",
     "displayName": "Friends",
     "description": "Friendships between users"
