@@ -176,6 +176,7 @@ export async function createStrapiInstance() {
             
             return friendRequest;
           }
+          return undefined;
         }),
         
         update: jest.fn().mockImplementation(async (ctx: any) => {
@@ -207,6 +208,7 @@ export async function createStrapiInstance() {
             
             return updated;
           }
+          return undefined;
         }),
         
         find: jest.fn().mockImplementation(async (ctx: any) => {
@@ -226,6 +228,7 @@ export async function createStrapiInstance() {
             
             return { data: friends };
           }
+          return { data: [] };
         }),
         
         delete: jest.fn().mockImplementation(async (ctx: any) => {
@@ -246,6 +249,7 @@ export async function createStrapiInstance() {
             await strapi.entityService.delete('api::friends.friends' as any, friendship.id);
             return { success: true };
           }
+          return { success: false };
         }),
         
         checkStatus: jest.fn().mockImplementation(async (ctx: any) => {
@@ -276,6 +280,7 @@ export async function createStrapiInstance() {
             
             return { status: 'not_friends', data: null };
           }
+          return { status: 'not_friends', data: null };
         }),
         
         getPending: jest.fn().mockImplementation(async (ctx: any) => {
@@ -284,6 +289,7 @@ export async function createStrapiInstance() {
             const pending = friendRequests.filter(r => r.to === userId && r.status === 'pending');
             return { data: pending };
           }
+          return { data: [] };
         }),
         
         getSent: jest.fn().mockImplementation(async (ctx: any) => {
@@ -292,6 +298,7 @@ export async function createStrapiInstance() {
             const sent = friendRequests.filter(r => r.from === userId);
             return { data: sent };
           }
+          return { data: [] };
         })
       };
     }),
