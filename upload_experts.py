@@ -590,8 +590,16 @@ for idx_int, (idx, row) in enumerate(df.iterrows(), start=2):
     for prop in properties:
         prop_payload = dict(prop)  # shallow copy
         prop_payload['owner'] = consultant_id
-        # Remove images field if present (Strapi may not accept it directly)
-        prop_payload.pop('images', None)
+        # Handle images: upload each image URL and collect media IDs
+        image_urls = prop_payload.pop('images', None)
+        image_ids = []
+        if image_urls and isinstance(image_urls, list):
+            for img_url in image_urls:
+                img_id = upload_media(img_url)
+                if img_id:
+                    image_ids.append(img_id)
+        if image_ids:
+            prop_payload['media_urls'] = image_ids
         # Ensure 'roles' and 'tags' are strings
         if isinstance(prop_payload.get('roles'), list):
             prop_payload['roles'] = ', '.join(str(r) for r in prop_payload['roles'])
