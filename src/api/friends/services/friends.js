@@ -2,9 +2,9 @@
 
 const { createCoreService } = require('@strapi/strapi').factories;
 
-module.exports = createCoreService('api::friends.friends', ({ strapi }) => ({
+module.exports = createCoreService('api::friends.friend', ({ strapi }) => ({
   async getFriendsForUser(userId) {
-    const friendships = await strapi.entityService.findMany('api::friends.friends', {
+          const friendships = await strapi.entityService.findMany('api::friends.friend', {
       filters: {
         $or: [
           { user1: userId },
@@ -29,7 +29,7 @@ module.exports = createCoreService('api::friends.friends', ({ strapi }) => ({
   
   async checkFriendshipStatus(userId1, userId2) {
     // Check if they are friends
-    const friendship = await strapi.entityService.findMany('api::friends.friends', {
+    const friendship = await strapi.entityService.findMany('api::friends.friend', {
       filters: {
         $or: [
           { user1: userId1, user2: userId2 },
@@ -71,7 +71,7 @@ module.exports = createCoreService('api::friends.friends', ({ strapi }) => ({
   },
   
   async removeFriendship(userId1, userId2) {
-    const friendship = await strapi.entityService.findMany('api::friends.friends', {
+    const friendship = await strapi.entityService.findMany('api::friends.friend', {
       filters: {
         $or: [
           { user1: userId1, user2: userId2 },
@@ -84,6 +84,6 @@ module.exports = createCoreService('api::friends.friends', ({ strapi }) => ({
       throw new Error('Friendship not found');
     }
     
-    return await strapi.entityService.delete('api::friends.friends', friendship[0].id);
+    return await strapi.entityService.delete('api::friends.friend', friendship[0].id);
   }
 }));

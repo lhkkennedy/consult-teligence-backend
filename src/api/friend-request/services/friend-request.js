@@ -17,7 +17,7 @@ module.exports = createCoreService('api::friend-request.friend-request', ({ stra
   },
   
   async checkExistingFriendship(userId1, userId2) {
-    const existingFriendship = await strapi.entityService.findMany('api::friends.friends', {
+    const existingFriendship = await strapi.entityService.findMany('api::friends.friend', {
       filters: {
         $or: [
           { user1: userId1, user2: userId2 },

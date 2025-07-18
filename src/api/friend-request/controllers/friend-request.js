@@ -27,7 +27,7 @@ module.exports = createCoreController('api::friend-request.friend-request', ({ s
     }
     
     // Check if users are already friends
-    const existingFriendship = await strapi.entityService.findMany('api::friends.friends', {
+    const existingFriendship = await strapi.entityService.findMany('api::friends.friend', {
       filters: {
         $or: [
           { user1: userId, user2: data.to },
@@ -93,7 +93,7 @@ module.exports = createCoreController('api::friend-request.friend-request', ({ s
     
     // If accepted, create friendship
     if (data.status === 'accepted') {
-      await strapi.entityService.create('api::friends.friends', {
+      await strapi.entityService.create('api::friends.friend', {
         data: {
           user1: friendRequest.from.id,
           user2: friendRequest.to.id

@@ -465,6 +465,82 @@ export interface ApiConsultantConsultant extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiFriendRequestFriendRequest
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'friend_requests';
+  info: {
+    description: 'Friend requests between users';
+    displayName: 'Friend Request';
+    pluralName: 'friend-requests';
+    singularName: 'friend-request';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    from: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::friend-request.friend-request'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    status: Schema.Attribute.Enumeration<['pending', 'accepted', 'rejected']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'pending'>;
+    to: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiFriendsFriend extends Struct.CollectionTypeSchema {
+  collectionName: 'friends';
+  info: {
+    description: 'Friendships between users';
+    displayName: 'Friends';
+    pluralName: 'friends';
+    singularName: 'friend';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::friends.friend'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user1: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    user2: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiPropertyProperty extends Struct.CollectionTypeSchema {
   collectionName: 'properties';
   info: {
@@ -483,7 +559,6 @@ export interface ApiPropertyProperty extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     deal_size: Schema.Attribute.Decimal;
     headline_metric: Schema.Attribute.String;
-    images: Schema.Attribute.Media<'images', true>;
     irr: Schema.Attribute.Decimal;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -491,6 +566,7 @@ export interface ApiPropertyProperty extends Struct.CollectionTypeSchema {
       'api::property.property'
     > &
       Schema.Attribute.Private;
+    media_urls: Schema.Attribute.JSON;
     owner: Schema.Attribute.Relation<'manyToOne', 'api::consultant.consultant'>;
     property_type: Schema.Attribute.Enumeration<
       ['Industrial', 'Office', 'Retail', 'Residential']
@@ -1011,7 +1087,6 @@ export interface PluginUsersPermissionsUser
   };
   options: {
     draftAndPublish: false;
-    timestamps: true;
   };
   attributes: {
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
@@ -1021,7 +1096,7 @@ export interface PluginUsersPermissionsUser
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     email: Schema.Attribute.Email &
-      Schema.Attribute.Required &
+      Schema.Attribute.Unique &
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
@@ -1038,16 +1113,23 @@ export interface PluginUsersPermissionsUser
       }>;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    receivedFriendRequests: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::friend-request.friend-request'
+    >;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
     role: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.role'
     >;
+    sentFriendRequests: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::friend-request.friend-request'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     username: Schema.Attribute.String &
-      Schema.Attribute.Required &
       Schema.Attribute.Unique &
       Schema.Attribute.SetMinMaxLength<{
         minLength: 3;
@@ -1067,6 +1149,8 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::article.article': ApiArticleArticle;
       'api::consultant.consultant': ApiConsultantConsultant;
+      'api::friend-request.friend-request': ApiFriendRequestFriendRequest;
+      'api::friends.friend': ApiFriendsFriend;
       'api::property.property': ApiPropertyProperty;
       'api::timeline-item.timeline-item': ApiTimelineItemTimelineItem;
       'plugin::content-releases.release': PluginContentReleasesRelease;

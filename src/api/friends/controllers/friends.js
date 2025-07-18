@@ -2,12 +2,12 @@
 
 const { createCoreController } = require('@strapi/strapi').factories;
 
-module.exports = createCoreController('api::friends.friends', ({ strapi }) => ({
+module.exports = createCoreController('api::friends.friend', ({ strapi }) => ({
   async find(ctx) {
     const userId = ctx.state.user.id;
     
     // Get user's friends
-    const friends = await strapi.entityService.findMany('api::friends.friends', {
+    const friends = await strapi.entityService.findMany('api::friends.friend', {
       filters: {
         $or: [
           { user1: userId },
@@ -47,7 +47,7 @@ module.exports = createCoreController('api::friends.friends', ({ strapi }) => ({
     const userId = ctx.state.user.id;
     
     // Find the friendship
-    const friendship = await strapi.entityService.findMany('api::friends.friends', {
+    const friendship = await strapi.entityService.findMany('api::friends.friend', {
       filters: {
         $or: [
           { user1: userId, user2: id },
@@ -61,7 +61,7 @@ module.exports = createCoreController('api::friends.friends', ({ strapi }) => ({
     }
     
     // Delete the friendship
-    await strapi.entityService.delete('api::friends.friends', friendship[0].id);
+    await strapi.entityService.delete('api::friends.friend', friendship[0].id);
     
     return { success: true };
   },
@@ -71,7 +71,7 @@ module.exports = createCoreController('api::friends.friends', ({ strapi }) => ({
     const currentUserId = ctx.state.user.id;
     
     // Check if they are friends
-    const friendship = await strapi.entityService.findMany('api::friends.friends', {
+    const friendship = await strapi.entityService.findMany('api::friends.friend', {
       filters: {
         $or: [
           { user1: currentUserId, user2: userId },
