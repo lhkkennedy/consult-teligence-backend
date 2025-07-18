@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals';
+
 import articleService from '../src/api/article/services/article';
 
 describe('article service', () => {

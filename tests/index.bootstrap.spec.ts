@@ -1,4 +1,4 @@
-import { describe, it, expect, jest } from '@jest/globals';
+
 import app from '../src/index';
 
 describe('index bootstrap', () => {

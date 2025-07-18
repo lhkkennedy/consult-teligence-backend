@@ -9,8 +9,13 @@ module.exports = {
   testMatch: ['**/?(*.)+(spec|test).[tj]s?(x)'],
   moduleFileExtensions: ['ts', 'js', 'json', 'node'],
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
+    '^.+\\.(ts|tsx)$': ['ts-jest', {
+      tsconfig: {
+        types: ['jest', 'node']
+      }
+    }],
   },
   testPathIgnorePatterns: ['/node_modules/', '/build/', '/public/'],
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+  injectGlobals: true
 };
