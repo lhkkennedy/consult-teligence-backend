@@ -1,0 +1,69 @@
+{
+  "kind": "collectionType",
+  "collectionName": "up_users",
+  "info": {
+    "name": "user",
+    "description": "",
+    "singularName": "user",
+    "pluralName": "users",
+    "displayName": "User"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "username": {
+      "type": "string",
+      "unique": true,
+      "minLength": 3
+    },
+    "email": {
+      "type": "email",
+      "unique": true,
+      "minLength": 6
+    },
+    "provider": {
+      "type": "string"
+    },
+    "password": {
+      "type": "password",
+      "private": true,
+      "minLength": 6
+    },
+    "resetPasswordToken": {
+      "type": "string",
+      "private": true
+    },
+    "confirmationToken": {
+      "type": "string",
+      "private": true
+    },
+    "confirmed": {
+      "type": "boolean",
+      "default": false
+    },
+    "blocked": {
+      "type": "boolean",
+      "default": false
+    },
+    "role": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.role",
+      "inversedBy": "users",
+      "configurable": false
+    },
+    "sentFriendRequests": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::friend-request.friend-request",
+      "mappedBy": "from"
+    },
+    "receivedFriendRequests": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::friend-request.friend-request",
+      "mappedBy": "to"
+    }
+  }
+}
