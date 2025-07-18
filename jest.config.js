@@ -12,4 +12,5 @@ module.exports = {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   testPathIgnorePatterns: ['/node_modules/', '/build/', '/public/'],
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
 };

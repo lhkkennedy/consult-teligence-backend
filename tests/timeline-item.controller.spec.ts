@@ -1,3 +1,5 @@
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+
 // Test the timeline-item controller logic directly
 describe('timeline-item controller logic', () => {
   let ctx: any;
