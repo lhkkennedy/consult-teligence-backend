@@ -1,6 +1,4 @@
-'use strict';
-
-module.exports = async (ctx, next) => {
+export default async (ctx: any, next: any) => {
   if (!ctx.state.user) {
     return ctx.unauthorized('Authentication required');
   }
