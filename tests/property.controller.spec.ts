@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals';
+
 import propertyController from '../src/api/property/controllers/property';
 
 describe('property controller', () => {

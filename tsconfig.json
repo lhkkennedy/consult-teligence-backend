@@ -14,7 +14,9 @@
     "noImplicitThis": true,
     "outDir": "dist",
     "rootDir": ".",
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
+    "allowJs": true,
+    "checkJs": false
   },
   "include": [
     // Include root files
