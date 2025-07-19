@@ -1,5 +1,5 @@
 
-import isOwner from '../src/policies/is-owner';
+import isOwner from '../src/policies/business/is-owner';
 
 describe('is-owner policy', () => {
   let ctx: any;

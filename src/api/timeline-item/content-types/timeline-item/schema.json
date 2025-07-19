@@ -15,9 +15,6 @@
       "type": "string",
       "unique": true
     },
-    "created_at": {
-      "type": "datetime"
-    },
     "body_md": {
       "type": "text"
     },

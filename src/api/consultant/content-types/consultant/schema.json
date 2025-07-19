@@ -76,22 +76,16 @@
       ]
     },
     "contactInfo": {
-      "type": "component",
-      "component": "consultants.contact-info",
-      "repeatable": false
+      "type": "json"
     },
     "availability": {
       "type": "string"
     },
     "testimonials": {
-      "type": "component",
-      "component": "consultants.testimonials",
-      "repeatable": true
+      "type": "json"
     },
     "caseStudies": {
-      "type": "component",
-      "component": "consultants.case-studies",
-      "repeatable": true
+      "type": "json"
     },
     "total_gfa": {
       "type": "integer"
