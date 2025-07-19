@@ -64,6 +64,12 @@
       "relation": "oneToMany",
       "target": "api::friend-request.friend-request",
       "mappedBy": "to"
+    },
+    "consultant": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::consultant.consultant",
+      "mappedBy": "user"
     }
   }
 }

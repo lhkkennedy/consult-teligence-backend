@@ -414,10 +414,10 @@ export interface ApiConsultantConsultant extends Struct.CollectionTypeSchema {
     availability: Schema.Attribute.String;
     avg_deal_size: Schema.Attribute.Integer;
     bio: Schema.Attribute.RichText;
-    caseStudies: Schema.Attribute.JSON;
+    caseStudies: Schema.Attribute.Component<'consultants.case-studies', true>;
     certifications: Schema.Attribute.JSON;
     company: Schema.Attribute.String;
-    contactInfo: Schema.Attribute.JSON;
+    contactInfo: Schema.Attribute.Component<'consultants.contact-info', false>;
     countryExpertise: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -452,7 +452,7 @@ export interface ApiConsultantConsultant extends Struct.CollectionTypeSchema {
     >;
     publishedAt: Schema.Attribute.DateTime;
     rate: Schema.Attribute.Decimal;
-    testimonials: Schema.Attribute.JSON;
+    testimonials: Schema.Attribute.Component<'consultants.testimonials', true>;
     total_aum: Schema.Attribute.Integer;
     total_gfa: Schema.Attribute.Integer;
     updatedAt: Schema.Attribute.DateTime;
@@ -603,6 +603,7 @@ export interface ApiTimelineItemTimelineItem
     >;
     body_md: Schema.Attribute.Text;
     comments: Schema.Attribute.JSON;
+    created_at: Schema.Attribute.DateTime;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
