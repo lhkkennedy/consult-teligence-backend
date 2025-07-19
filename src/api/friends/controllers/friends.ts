@@ -29,14 +29,42 @@ export default factories.createCoreController('api::friends.friend', ({ strapi }
           ]
         } as any,
         populate: {
-          user1: true,
-          user2: true
+          user1: {
+            populate: {
+              consultant: {
+                populate: {
+                  profileImage: true
+                }
+              }
+            }
+          },
+          user2: {
+            populate: {
+              consultant: {
+                populate: {
+                  profileImage: true
+                }
+              }
+            }
+          }
         } as any
       });
       
-      // Transform to return only friend data (not the current user)
+      // Transform to return only friend data (not the current user) with consultant data
       const friendUsers = friends.map((friendship: any) => {
-        return friendship.user1.id === userId ? friendship.user2 : friendship.user1;
+        const friendUser = friendship.user1.id === userId ? friendship.user2 : friendship.user1;
+        const consultant = friendUser.consultant;
+        
+        return {
+          ...friendUser,
+          firstName: consultant?.firstName,
+          lastName: consultant?.lastName,
+          profileImage: consultant?.profileImage,
+          company: consultant?.company,
+          currentRole: consultant?.currentRole,
+          location: consultant?.location,
+          documentId: consultant?.documentId // Add the documentId for navigation
+        };
       });
       
       return {
@@ -74,8 +102,24 @@ export default factories.createCoreController('api::friends.friend', ({ strapi }
           ]
         } as any,
         populate: {
-          user1: true,
-          user2: true
+          user1: {
+            populate: {
+              consultant: {
+                populate: {
+                  profileImage: true
+                }
+              }
+            }
+          },
+          user2: {
+            populate: {
+              consultant: {
+                populate: {
+                  profileImage: true
+                }
+              }
+            }
+          }
         } as any
       });
       
@@ -83,12 +127,24 @@ export default factories.createCoreController('api::friends.friend', ({ strapi }
         return ctx.notFound('Friendship not found');
       }
       
-      // Return the friend data (not the current user)
+      // Return the friend data (not the current user) with consultant data
       const friendshipItem = friendship[0];
       const friendUser = friendshipItem.user1.id === userId ? friendshipItem.user2 : friendshipItem.user1;
+      const consultant = friendUser.consultant;
+      
+      const transformedFriend = {
+        ...friendUser,
+        firstName: consultant?.firstName,
+        lastName: consultant?.lastName,
+        profileImage: consultant?.profileImage,
+        company: consultant?.company,
+        currentRole: consultant?.currentRole,
+        location: consultant?.location,
+        documentId: consultant?.documentId
+      };
       
       return {
-        data: friendUser
+        data: transformedFriend
       };
     } catch (error) {
       strapi.log.error('Error fetching friend:', error);

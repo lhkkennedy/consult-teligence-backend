@@ -29,19 +29,63 @@ export default factories.createCoreController('api::friend-request.friend-reques
           ]
         } as any,
         populate: {
-          from: true,
-          to: true
+          from: {
+            populate: {
+              consultant: {
+                populate: {
+                  profileImage: true
+                }
+              }
+            }
+          },
+          to: {
+            populate: {
+              consultant: {
+                populate: {
+                  profileImage: true
+                }
+              }
+            }
+          }
         } as any
       });
       
+      // Transform the data to flatten the consultant fields into the user object
+      const transformedRequests = friendRequests.map((request: any) => {
+        const consultantFrom = request.from?.consultant;
+        const consultantTo = request.to?.consultant;
+        
+        return {
+          ...request,
+          from: {
+            ...request.from,
+            firstName: consultantFrom?.firstName,
+            lastName: consultantFrom?.lastName,
+            profileImage: consultantFrom?.profileImage,
+            company: consultantFrom?.company,
+            currentRole: consultantFrom?.currentRole,
+            location: consultantFrom?.location
+          },
+          to: {
+            ...request.to,
+            firstName: consultantTo?.firstName,
+            lastName: consultantTo?.lastName,
+            profileImage: consultantTo?.profileImage,
+            company: consultantTo?.company,
+            currentRole: consultantTo?.currentRole,
+            location: consultantTo?.location
+          }
+        };
+      });
+      
       return {
-        data: friendRequests,
+        data: transformedRequests,
         meta: {
           pagination: {
             page: 1,
-            pageSize: friendRequests.length,
+            pageSize: transformedRequests.length,
             pageCount: 1,
-            total: friendRequests.length
+            total: transformedRequests.length
           }
         }
       };
@@ -63,8 +107,24 @@ export default factories.createCoreController('api::friend-request.friend-reques
       // Get the friend request
       const friendRequest = await strapi.entityService.findOne('api::friend-request.friend-request', id, {
         populate: {
-          from: true,
-          to: true
+          from: {
+            populate: {
+              consultant: {
+                populate: {
+                  profileImage: true
+                }
+              }
+            }
+          },
+          to: {
+            populate: {
+              consultant: {
+                populate: {
+                  profileImage: true
+                }
+              }
+            }
+          }
         } as any
       }) as unknown as FriendRequest;
       
@@ -77,8 +137,34 @@ export default factories.createCoreController('api::friend-request.friend-reques
         return ctx.forbidden('Not authorized to view this friend request');
       }
       
+      // Transform the data to flatten the consultant fields into the user object
+      const consultantFrom = friendRequest.from?.consultant;
+      const consultantTo = friendRequest.to?.consultant;
+      
+      const transformedRequest = {
+        ...friendRequest,
+        from: {
+          ...friendRequest.from,
+          firstName: consultantFrom?.firstName,
+          lastName: consultantFrom?.lastName,
+          profileImage: consultantFrom?.profileImage,
+          company: consultantFrom?.company,
+          currentRole: consultantFrom?.currentRole,
+          location: consultantFrom?.location
+        },
+        to: {
+          ...friendRequest.to,
+          firstName: consultantTo?.firstName,
+          lastName: consultantTo?.lastName,
+          profileImage: consultantTo?.profileImage,
+          company: consultantTo?.company,
+          currentRole: consultantTo?.currentRole,
+          location: consultantTo?.location
+        }
+      };
+      
       return {
-        data: friendRequest
+        data: transformedRequest
       };
     } catch (error) {
       strapi.log.error('Error fetching friend request:', error);
@@ -97,7 +183,10 @@ export default factories.createCoreController('api::friend-request.friend-reques
     try {
       // Get the friend request
       const friendRequest = await strapi.entityService.findOne('api::friend-request.friend-request', id, {
-        populate: ['from', 'to']
+        populate: {
+          from: true,
+          to: true
+        } as any
       }) as unknown as FriendRequest;
       
       if (!friendRequest) {
@@ -215,7 +304,10 @@ export default factories.createCoreController('api::friend-request.friend-reques
     try {
       // Get the friend request
       const friendRequest = await strapi.entityService.findOne('api::friend-request.friend-request', id, {
-        populate: ['from', 'to']
+        populate: {
+          from: true,
+          to: true
+        } as any
       }) as unknown as FriendRequest;
       
       if (!friendRequest) {
@@ -268,17 +360,65 @@ export default factories.createCoreController('api::friend-request.friend-reques
         filters: {
           to: userId,
           status: 'pending'
-        }
+        },
+        populate: {
+          from: {
+            populate: {
+              consultant: {
+                populate: {
+                  profileImage: true
+                }
+              }
+            }
+          },
+          to: {
+            populate: {
+              consultant: {
+                populate: {
+                  profileImage: true
+                }
+              }
+            }
+          }
+        } as any
+      });
+      
+      // Transform the data to flatten the consultant fields into the user object
+      const transformedRequests = pendingRequests.map((request: any) => {
+        const consultantFrom = request.from?.consultant;
+        const consultantTo = request.to?.consultant;
+        
+        return {
+          ...request,
+          from: {
+            ...request.from,
+            firstName: consultantFrom?.firstName,
+            lastName: consultantFrom?.lastName,
+            profileImage: consultantFrom?.profileImage,
+            company: consultantFrom?.company,
+            currentRole: consultantFrom?.currentRole,
+            location: consultantFrom?.location
+          },
+          to: {
+            ...request.to,
+            firstName: consultantTo?.firstName,
+            lastName: consultantTo?.lastName,
+            profileImage: consultantTo?.profileImage,
+            company: consultantTo?.company,
+            currentRole: consultantTo?.currentRole,
+            location: consultantTo?.location
+          }
+        };
       });
       
       return {
-        data: pendingRequests,
+        data: transformedRequests,
         meta: {
           pagination: {
             page: 1,
-            pageSize: pendingRequests.length,
+            pageSize: transformedRequests.length,
             pageCount: 1,
-            total: pendingRequests.length
+            total: transformedRequests.length
           }
         }
       };
@@ -296,17 +436,65 @@ export default factories.createCoreController('api::friend-request.friend-reques
         filters: {
           from: userId,
           status: 'pending'
-        }
+        },
+        populate: {
+          from: {
+            populate: {
+              consultant: {
+                populate: {
+                  profileImage: true
+                }
+              }
+            }
+          },
+          to: {
+            populate: {
+              consultant: {
+                populate: {
+                  profileImage: true
+                }
+              }
+            }
+          }
+        } as any
+      });
+      
+      // Transform the data to flatten the consultant fields into the user object
+      const transformedRequests = sentRequests.map((request: any) => {
+        const consultantFrom = request.from?.consultant;
+        const consultantTo = request.to?.consultant;
+        
+        return {
+          ...request,
+          from: {
+            ...request.from,
+            firstName: consultantFrom?.firstName,
+            lastName: consultantFrom?.lastName,
+            profileImage: consultantFrom?.profileImage,
+            company: consultantFrom?.company,
+            currentRole: consultantFrom?.currentRole,
+            location: consultantFrom?.location
+          },
+          to: {
+            ...request.to,
+            firstName: consultantTo?.firstName,
+            lastName: consultantTo?.lastName,
+            profileImage: consultantTo?.profileImage,
+            company: consultantTo?.company,
+            currentRole: consultantTo?.currentRole,
+            location: consultantTo?.location
+          }
+        };
       });
       
       return {
-        data: sentRequests,
+        data: transformedRequests,
         meta: {
           pagination: {
             page: 1,
-            pageSize: sentRequests.length,
+            pageSize: transformedRequests.length,
             pageCount: 1,
-            total: sentRequests.length
+            total: transformedRequests.length
           }
         }
       };
