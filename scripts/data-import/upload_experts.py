@@ -39,7 +39,7 @@ COLLECTION = 'consultants'  # if your endpoint is /api/experts
 print("Current working directory:", os.getcwd())
 SCRIPT_DIR = Path(__file__).resolve().parent
 excel_filename = 'expert_profile.xlsx'
-excel_path = SCRIPT_DIR / excel_filename
+excel_path = SCRIPT_DIR.parent.parent / excel_filename
 print("Loading Excel from :", excel_path)
 if not excel_path.exists():
     print(f"Error: Excel file not found at {excel_path}")

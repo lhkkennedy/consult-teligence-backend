@@ -1,5 +1,5 @@
 
-import propertyController from '../src/api/property/controllers/property';
+import propertyController from '../src/api/v1/business/property/controllers/property';
 
 describe('property controller', () => {
   it('should be defined', () => {

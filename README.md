@@ -1,61 +1,169 @@
-# 🚀 Getting started with Strapi
+# ConsultTelligence Backend
 
-Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
+A Strapi-based backend application for managing consultants, properties, and social networking features.
 
-### `develop`
-
-Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
+## 🏗️ Project Structure
 
 ```
-npm run develop
-# or
-yarn develop
+├── src/
+│   ├── api/
+│   │   └── v1/
+│   │       ├── business/           # Business-related APIs
+│   │       │   ├── consultant/     # Consultant management
+│   │       │   └── property/       # Property management
+│   │       ├── content/            # Content-related APIs
+│   │       │   ├── article/        # Article management
+│   │       │   └── timeline-item/  # Timeline posts
+│   │       └── social/             # Social features
+│   │           ├── friends/        # Friends management
+│   │           └── friend-request/ # Friend requests
+│   ├── components/
+│   │   └── business/
+│   │       └── consultants/        # Consultant components
+│   ├── extensions/
+│   │   └── users-permissions/      # User permissions extensions
+│   ├── policies/
+│   │   ├── auth/                   # Authentication policies
+│   │   │   └── isAuthenticated.ts
+│   │   └── business/               # Business logic policies
+│   │       └── is-owner.ts
+│   └── index.ts                    # Application bootstrap
+├── config/
+│   ├── environments/               # Environment-specific configs
+│   │   └── env/
+│   ├── admin.ts                    # Admin panel configuration
+│   ├── api.ts                      # API configuration
+│   ├── database.ts                 # Database configuration
+│   ├── middlewares.ts              # Middleware configuration
+│   ├── plugins.ts                  # Plugin configuration
+│   └── server.ts                   # Server configuration
+├── database/
+│   └── schema/
+│       └── migrations/             # Database migrations
+├── docs/                           # Documentation
+│   ├── API_DOCUMENTATION.md
+│   ├── BUG_FIXES_SUMMARY.md
+│   ├── FRIEND_SYSTEM_API.md
+│   ├── FRIEND_SYSTEM_IMPLEMENTATION_GUIDE.md
+│   └── FRIEND_SYSTEM_README.md
+├── scripts/
+│   ├── data-import/                # Data import utilities
+│   │   ├── upload_experts.py       # Expert data upload script
+│   │   ├── mockData/               # Mock data files
+│   │   └── images/                 # Profile images
+│   ├── migration/                  # Migration scripts
+│   │   └── migrate-http.ts
+│   └── testing/                    # Testing scripts
+│       └── test-friend-system.ts
+├── tests/                          # Test files
+├── types/
+│   └── api/
+│       └── generated/              # Generated TypeScript types
+├── public/                         # Public assets
+│   └── uploads/                    # File uploads
+└── package.json
 ```
 
-### `start`
+## 🚀 Getting Started
 
-Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
+### Prerequisites
 
+- Node.js >= 18.0.0
+- npm >= 6.0.0
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up environment variables:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## 📚 API Documentation
+
+- [API Documentation](./docs/API_DOCUMENTATION.md)
+- [Friend System API](./docs/FRIEND_SYSTEM_API.md)
+- [Friend System Implementation Guide](./docs/FRIEND_SYSTEM_IMPLEMENTATION_GUIDE.md)
+
+## 🧪 Testing
+
+Run tests:
+```bash
+npm test
 ```
-npm run start
-# or
-yarn start
+
+## 📦 Scripts
+
+### Data Import
+```bash
+# Import expert data
+python scripts/data-import/upload_experts.py
 ```
 
-### `build`
-
-Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
-
-```
-npm run build
-# or
-yarn build
+### Migration
+```bash
+# Run HTTP migration
+npm run ts-node scripts/migration/migrate-http.ts
 ```
 
-## ⚙️ Deployment
-
-Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
-
-```
-yarn strapi deploy
+### Testing
+```bash
+# Test friend system
+npm run ts-node scripts/testing/test-friend-system.ts
 ```
 
-## 📚 Learn more
+## 🔧 Configuration
 
-- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
-- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
-- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
-- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
-- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
+The application uses a modular configuration structure:
 
-Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
+- `config/admin.ts` - Admin panel settings
+- `config/api.ts` - API settings
+- `config/database.ts` - Database connection and settings
+- `config/middlewares.ts` - Middleware configuration
+- `config/plugins.ts` - Plugin settings
+- `config/server.ts` - Server configuration
 
-## ✨ Community
+## 🏛️ Architecture
 
-- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
-- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
-- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
+### API Versioning
+The API is organized under `src/api/v1/` to support future versioning.
 
----
+### Business Logic
+- **Business APIs**: Consultant and property management
+- **Content APIs**: Articles and timeline posts
+- **Social APIs**: Friends and friend requests
 
-<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+### Policies
+- **Authentication**: User authentication and authorization
+- **Business**: Business logic policies (e.g., ownership verification)
+
+### Components
+Reusable content types organized by business domain.
+
+## 🔒 Security
+
+- Authentication policies protect all API endpoints
+- Ownership policies ensure users can only modify their own content
+- Input validation and sanitization on all endpoints
+
+## 📝 Contributing
+
+1. Follow the established file structure
+2. Add tests for new features
+3. Update documentation as needed
+4. Use TypeScript for all new code
+
+## 📄 License
+
+This project is private and proprietary.
