@@ -1,0 +1,75 @@
+{
+  "kind": "collectionType",
+  "collectionName": "feed_analytics",
+  "info": {
+    "singularName": "feed-analytics",
+    "pluralName": "feed-analytics",
+    "displayName": "Feed Analytics",
+    "description": "User engagement analytics and insights"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "date": {
+      "type": "date",
+      "required": true
+    },
+    "posts_viewed": {
+      "type": "integer",
+      "default": 0
+    },
+    "posts_liked": {
+      "type": "integer",
+      "default": 0
+    },
+    "posts_commented": {
+      "type": "integer",
+      "default": 0
+    },
+    "posts_shared": {
+      "type": "integer",
+      "default": 0
+    },
+    "posts_saved": {
+      "type": "integer",
+      "default": 0
+    },
+    "total_time_spent": {
+      "type": "integer",
+      "default": 0
+    },
+    "average_session_duration": {
+      "type": "integer",
+      "default": 0
+    },
+    "most_viewed_post_types": {
+      "type": "json"
+    },
+    "most_engaged_authors": {
+      "type": "json"
+    },
+    "preferred_deal_sizes": {
+      "type": "json"
+    },
+    "preferred_locations": {
+      "type": "json"
+    },
+    "recommended_connections": {
+      "type": "json"
+    },
+    "recommended_topics": {
+      "type": "json"
+    },
+    "recommended_deals": {
+      "type": "json"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "feed_analytics"
+    }
+  }
+}

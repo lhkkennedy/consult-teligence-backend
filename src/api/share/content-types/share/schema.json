@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "shares",
+  "info": {
+    "singularName": "share",
+    "pluralName": "shares",
+    "displayName": "Share",
+    "description": "Track post sharing across different platforms"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "share_type": {
+      "type": "enumeration",
+      "enum": [
+        "network",
+        "external",
+        "email",
+        "copy_link"
+      ],
+      "required": true
+    },
+    "share_platform": {
+      "type": "string"
+    },
+    "recipient_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "click_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "shares"
+    },
+    "post": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::post.post",
+      "inversedBy": "shares"
+    }
+  }
+}

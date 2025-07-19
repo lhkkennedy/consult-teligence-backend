@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "saves",
+  "info": {
+    "singularName": "save",
+    "pluralName": "saves",
+    "displayName": "Save",
+    "description": "User bookmarks and collections for posts"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "collection": {
+      "type": "string",
+      "default": "default"
+    },
+    "notes": {
+      "type": "text"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "saves"
+    },
+    "post": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::post.post",
+      "inversedBy": "saves"
+    }
+  }
+}

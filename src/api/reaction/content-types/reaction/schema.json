@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "reactions",
+  "info": {
+    "singularName": "reaction",
+    "pluralName": "reactions",
+    "displayName": "Reaction",
+    "description": "User reactions to posts with engagement scoring"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "reaction_type": {
+      "type": "enumeration",
+      "enum": [
+        "like",
+        "love",
+        "celebrate",
+        "insightful",
+        "helpful"
+      ],
+      "required": true
+    },
+    "weight": {
+      "type": "integer",
+      "default": 1
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "reactions"
+    },
+    "post": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::post.post",
+      "inversedBy": "reactions"
+    },
+    "comment": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::comment.comment",
+      "inversedBy": "reactions"
+    }
+  }
+}

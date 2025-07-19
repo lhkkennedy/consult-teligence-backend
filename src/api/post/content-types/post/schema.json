@@ -1,0 +1,155 @@
+{
+  "kind": "collectionType",
+  "collectionName": "posts",
+  "info": {
+    "singularName": "post",
+    "pluralName": "posts",
+    "displayName": "Post",
+    "description": "Enhanced feed posts with comprehensive metadata and engagement tracking"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "post_type": {
+      "type": "enumeration",
+      "enum": [
+        "NewListing",
+        "ProgressUpdate",
+        "Closing",
+        "Insight",
+        "property"
+      ],
+      "required": true
+    },
+    "body_md": {
+      "type": "richtext",
+      "required": true
+    },
+    "sentiment": {
+      "type": "enumeration",
+      "enum": [
+        "Bull",
+        "Bear",
+        "Neutral"
+      ]
+    },
+    "deal_size": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "property_type": {
+      "type": "string"
+    },
+    "deal_stage": {
+      "type": "string"
+    },
+    "roi_estimate": {
+      "type": "string"
+    },
+    "market_trend": {
+      "type": "string"
+    },
+    "read_time": {
+      "type": "integer",
+      "default": 0
+    },
+    "engagement_score": {
+      "type": "integer",
+      "default": 0
+    },
+    "view_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "share_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "save_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "is_trending": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "seo_title": {
+      "type": "string"
+    },
+    "seo_description": {
+      "type": "text"
+    },
+    "seo_keywords": {
+      "type": "json"
+    },
+    "discoverability_score": {
+      "type": "integer",
+      "default": 0
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "posts"
+    },
+    "property": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::property.property"
+    },
+    "media_urls": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ]
+    },
+    "tags": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tag.tag",
+      "inversedBy": "posts"
+    },
+    "reactions": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::reaction.reaction",
+      "mappedBy": "post"
+    },
+    "comments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::comment.comment",
+      "mappedBy": "post"
+    },
+    "saves": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::save.save",
+      "mappedBy": "post"
+    },
+    "shares": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::share.share",
+      "mappedBy": "post"
+    },
+    "views": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::view.view",
+      "mappedBy": "post"
+    }
+  }
+}
