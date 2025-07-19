@@ -39,6 +39,8 @@
     "**/*.spec.js",
     "**/*.test.js",
     "src/admin/",
-    "src/plugins/**"
+    "src/plugins/**",
+    "scripts/",
+    "jest.config.js"
   ]
 }
