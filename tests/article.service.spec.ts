@@ -1,5 +1,5 @@
 
-import articleService from '../src/api/v1/content/article/services/article';
+import articleService from '../src/api/article/services/article';
 
 describe('article service', () => {
   it('should be defined', () => {

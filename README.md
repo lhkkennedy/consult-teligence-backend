@@ -6,17 +6,13 @@ A Strapi-based backend application for managing consultants, properties, and soc
 
 ```
 ├── src/
-│   ├── api/
-│   │   └── v1/
-│   │       ├── business/           # Business-related APIs
-│   │       │   ├── consultant/     # Consultant management
-│   │       │   └── property/       # Property management
-│   │       ├── content/            # Content-related APIs
-│   │       │   ├── article/        # Article management
-│   │       │   └── timeline-item/  # Timeline posts
-│   │       └── social/             # Social features
-│   │           ├── friends/        # Friends management
-│   │           └── friend-request/ # Friend requests
+│   ├── api/                        # API endpoints
+│   │   ├── consultant/             # Consultant management
+│   │   ├── property/               # Property management
+│   │   ├── article/                # Article management
+│   │   ├── timeline-item/          # Timeline posts
+│   │   ├── friends/                # Friends management
+│   │   └── friend-request/         # Friend requests
 │   ├── components/
 │   │   └── business/
 │   │       └── consultants/        # Consultant components
@@ -136,8 +132,8 @@ The application uses a modular configuration structure:
 
 ## 🏛️ Architecture
 
-### API Versioning
-The API is organized under `src/api/v1/` to support future versioning.
+### API Structure
+The API follows Strapi v5 conventions with direct organization under `src/api/`.
 
 ### Business Logic
 - **Business APIs**: Consultant and property management

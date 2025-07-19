@@ -17,23 +17,20 @@ src/api/
 └── timeline-item/
 ```
 
-**After:**
+**After (Strapi v5 Compatible):**
 ```
-src/api/v1/
-├── business/
-│   ├── consultant/
-│   └── property/
-├── content/
-│   ├── article/
-│   └── timeline-item/
-└── social/
-    ├── friend-request/
-    └── friends/
+src/api/
+├── consultant/
+├── property/
+├── article/
+├── timeline-item/
+├── friend-request/
+└── friends/
 ```
 
 **Benefits:**
 - Clear separation of concerns by business domain
-- Support for API versioning (v1)
+- Strapi v5 compatible structure
 - Easier to locate and maintain related functionality
 - Better scalability for future features
 
@@ -207,7 +204,7 @@ types/
    - `src/extensions/.gitkeep`
 
 3. **JavaScript Files Converted to TypeScript:**
-   - `src/api/friends/routes/friends.js` → `src/api/v1/social/friends/routes/friends.ts`
+   - `src/api/friends/routes/friends.js` → `src/api/friends/routes/friends.ts`
 
 ### Updated Import Paths
 All test files and import statements have been updated to reflect the new directory structure:
@@ -223,17 +220,23 @@ All test files and import statements have been updated to reflect the new direct
 
 ## 🔧 Technical Improvements
 
-### 1. TypeScript Consistency
+### 1. Strapi v5 Compatibility
+- Fixed API structure to follow Strapi v5 conventions
+- Corrected component references to use full paths (`business.consultants.*`)
+- Maintained proper UID format (`api::[api-name].[content-type-name]`)
+- Ensured all configurations are v5 compatible
+
+### 2. TypeScript Consistency
 - Converted remaining JavaScript files to TypeScript
 - Maintained type safety across the codebase
 - Updated import paths to reflect new structure
 
-### 2. Path Updates
+### 3. Path Updates
 - Updated all relative import paths in test files
 - Maintained Strapi API references (which use global namespaces)
 - Updated script references in documentation
 
-### 3. Documentation
+### 4. Documentation
 - Created comprehensive README with new structure
 - Updated file paths in documentation references
 - Added clear project structure visualization
@@ -263,7 +266,7 @@ All test files and import statements have been updated to reflect the new direct
 - Better organized code reduces cognitive load
 
 ### 2. Scalability
-- API versioning support ready
+- Strapi v5 compatible structure
 - Modular structure supports future features
 - Clear patterns for adding new functionality
 
@@ -293,17 +296,17 @@ All test files and import statements have been updated to reflect the new direct
 
 ## 🔮 Future Considerations
 
-### API Versioning
-The new structure supports easy API versioning:
-- Current APIs are under `v1/`
-- Future versions can be added as `v2/`, `v3/`, etc.
-- Clear migration path for breaking changes
+### API Structure
+The structure follows Strapi v5 conventions:
+- APIs are directly under `src/api/`
+- Each API has its own directory with standard structure
+- Clear organization by functionality
 
 ### Feature Organization
 New features can be easily organized:
-- Business features → `src/api/v1/business/`
-- Content features → `src/api/v1/content/`
-- Social features → `src/api/v1/social/`
+- Business features → `src/api/consultant/`, `src/api/property/`
+- Content features → `src/api/article/`, `src/api/timeline-item/`
+- Social features → `src/api/friends/`, `src/api/friend-request/`
 
 ### Testing Strategy
 The organized structure supports:

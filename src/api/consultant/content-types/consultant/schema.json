@@ -77,7 +77,7 @@
     },
     "contactInfo": {
       "type": "component",
-      "component": "consultants.contact-info",
+      "component": "business.consultants.contact-info",
       "repeatable": false
     },
     "availability": {
@@ -85,12 +85,12 @@
     },
     "testimonials": {
       "type": "component",
-      "component": "consultants.testimonials",
+      "component": "business.consultants.testimonials",
       "repeatable": true
     },
     "caseStudies": {
       "type": "component",
-      "component": "consultants.case-studies",
+      "component": "business.consultants.case-studies",
       "repeatable": true
     },
     "total_gfa": {
