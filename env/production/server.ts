@@ -1,12 +1,12 @@
 // path: ./config/env/production/server.js
 
-export default ({ env }) => ({
-  // Use Render's automatically provided external URL
-  url: env('RENDER_EXTERNAL_URL'),
-  // It's recommended to enable proxy since Render sits behind one
-  proxy: true,
+export default ({ env }: { env: any }) => ({
+  host: env('HOST', '0.0.0.0'),
+  port: env.int('PORT', 1337),
   app: {
-    // Make sure your APP_KEYS are set in Render's environment variables
     keys: env.array('APP_KEYS'),
+  },
+  webhooks: {
+    populateRelations: env.bool('WEBHOOKS_POPULATE_RELATIONS', false),
   },
 });

@@ -1,11 +1,133 @@
 'use strict';
 
-const { createCoreController } = require('@strapi/strapi').factories;
+import { factories } from '@strapi/strapi';
 
-module.exports = createCoreController('api::friend-request.friend-request', ({ strapi }) => ({
-  async create(ctx) {
-    const { data } = ctx.request.body;
+interface FriendRequest {
+  id: string;
+  from: any;
+  to: any;
+  status: 'pending' | 'accepted' | 'rejected';
+}
+
+interface User {
+  id: string;
+  profileImage?: any;
+}
+
+export default factories.createCoreController('api::friend-request.friend-request', ({ strapi }) => ({
+  // Standard CRUD methods
+  async find(ctx: any) {
     const userId = ctx.state.user.id;
+    
+    try {
+      // Get all friend requests for the current user (both sent and received)
+      const friendRequests = await strapi.entityService.findMany('api::friend-request.friend-request', {
+        filters: {
+          $or: [
+            { from: userId },
+            { to: userId }
+          ]
+        } as any,
+        populate: {
+          from: true,
+          to: true
+        } as any
+      });
+      
+      return {
+        data: friendRequests,
+        meta: {
+          pagination: {
+            page: 1,
+            pageSize: friendRequests.length,
+            pageCount: 1,
+            total: friendRequests.length
+          }
+        }
+      };
+    } catch (error) {
+      strapi.log.error('Error fetching friend requests:', error);
+      return ctx.internalServerError('Failed to fetch friend requests');
+    }
+  },
+
+  async findOne(ctx: any) {
+    const { id } = ctx.params;
+    const userId = ctx.state.user.id;
+    
+    if (!id) {
+      return ctx.badRequest('Friend request ID is required');
+    }
+    
+    try {
+      // Get the friend request
+      const friendRequest = await strapi.entityService.findOne('api::friend-request.friend-request', id, {
+        populate: {
+          from: true,
+          to: true
+        } as any
+      }) as unknown as FriendRequest;
+      
+      if (!friendRequest) {
+        return ctx.notFound('Friend request not found');
+      }
+      
+      // Check if the current user is involved in this request
+      if (friendRequest.from?.id !== userId && friendRequest.to?.id !== userId) {
+        return ctx.forbidden('Not authorized to view this friend request');
+      }
+      
+      return {
+        data: friendRequest
+      };
+    } catch (error) {
+      strapi.log.error('Error fetching friend request:', error);
+      return ctx.internalServerError('Failed to fetch friend request');
+    }
+  },
+
+  async delete(ctx: any) {
+    const { id } = ctx.params;
+    const userId = ctx.state.user.id;
+    
+    if (!id) {
+      return ctx.badRequest('Friend request ID is required');
+    }
+    
+    try {
+      // Get the friend request
+      const friendRequest = await strapi.entityService.findOne('api::friend-request.friend-request', id, {
+        populate: ['from', 'to']
+      }) as unknown as FriendRequest;
+      
+      if (!friendRequest) {
+        return ctx.notFound('Friend request not found');
+      }
+      
+      // Only the sender can delete the request
+      if (friendRequest.from?.id !== userId) {
+        return ctx.forbidden('Not authorized to delete this friend request');
+      }
+      
+      // Delete the friend request
+      await strapi.entityService.delete('api::friend-request.friend-request', id);
+      
+      return { success: true };
+    } catch (error) {
+      strapi.log.error('Error deleting friend request:', error);
+      return ctx.internalServerError('Failed to delete friend request');
+    }
+  },
+
+  // Override the default create method
+  async create(ctx: any) {
+    const { data } = ctx.request.body;
+    const userId = ctx.state.user?.id;
+    
+    // Check if user is authenticated
+    if (!userId) {
+      return ctx.unauthorized('Authentication required');
+    }
     
     // Validate input
     if (!data || !data.to) {
@@ -35,7 +157,7 @@ module.exports = createCoreController('api::friend-request.friend-request', ({ s
       });
       
       if (existingRequest.length > 0) {
-        const request = existingRequest[0];
+        const request = existingRequest[0] as unknown as FriendRequest;
         if (request.status === 'pending') {
           return ctx.badRequest('Friend request already exists');
         } else if (request.status === 'accepted') {
@@ -66,14 +188,6 @@ module.exports = createCoreController('api::friend-request.friend-request', ({ s
           ...data,
           from: userId,
           status: 'pending' // Ensure status is set to pending
-        },
-        populate: {
-          from: {
-            populate: ['profileImage']
-          },
-          to: {
-            populate: ['profileImage']
-          }
         }
       });
       
@@ -83,8 +197,9 @@ module.exports = createCoreController('api::friend-request.friend-request', ({ s
       return ctx.internalServerError('Failed to create friend request');
     }
   },
-  
-  async update(ctx) {
+
+  // Override the default update method
+  async update(ctx: any) {
     const { id } = ctx.params;
     const { data } = ctx.request.body;
     const userId = ctx.state.user.id;
@@ -101,14 +216,14 @@ module.exports = createCoreController('api::friend-request.friend-request', ({ s
       // Get the friend request
       const friendRequest = await strapi.entityService.findOne('api::friend-request.friend-request', id, {
         populate: ['from', 'to']
-      });
+      }) as unknown as FriendRequest;
       
       if (!friendRequest) {
         return ctx.notFound('Friend request not found');
       }
       
       // Only the recipient can accept/reject
-      if (friendRequest.to.id !== userId) {
+      if (friendRequest.to?.id !== userId) {
         return ctx.forbidden('Not authorized to update this request');
       }
       
@@ -119,15 +234,7 @@ module.exports = createCoreController('api::friend-request.friend-request', ({ s
       
       // Update the request
       const result = await strapi.entityService.update('api::friend-request.friend-request', id, {
-        data,
-        populate: {
-          from: {
-            populate: ['profileImage']
-          },
-          to: {
-            populate: ['profileImage']
-          }
-        }
+        data
       });
       
       // If accepted, create friendship
@@ -135,8 +242,8 @@ module.exports = createCoreController('api::friend-request.friend-request', ({ s
         try {
           await strapi.entityService.create('api::friends.friend', {
             data: {
-              user1: friendRequest.from.id,
-              user2: friendRequest.to.id
+              user1: friendRequest.from?.id,
+              user2: friendRequest.to?.id
             }
           });
         } catch (friendshipError) {
@@ -151,8 +258,9 @@ module.exports = createCoreController('api::friend-request.friend-request', ({ s
       return ctx.internalServerError('Failed to update friend request');
     }
   },
-  
-  async getPending(ctx) {
+
+  // Custom methods
+  async getPending(ctx: any) {
     const userId = ctx.state.user.id;
     
     try {
@@ -160,14 +268,6 @@ module.exports = createCoreController('api::friend-request.friend-request', ({ s
         filters: {
           to: userId,
           status: 'pending'
-        },
-        populate: {
-          from: {
-            populate: ['profileImage']
-          },
-          to: {
-            populate: ['profileImage']
-          }
         }
       });
       
@@ -188,7 +288,7 @@ module.exports = createCoreController('api::friend-request.friend-request', ({ s
     }
   },
   
-  async getSent(ctx) {
+  async getSent(ctx: any) {
     const userId = ctx.state.user.id;
     
     try {
@@ -196,14 +296,6 @@ module.exports = createCoreController('api::friend-request.friend-request', ({ s
         filters: {
           from: userId,
           status: 'pending'
-        },
-        populate: {
-          from: {
-            populate: ['profileImage']
-          },
-          to: {
-            populate: ['profileImage']
-          }
         }
       });
       

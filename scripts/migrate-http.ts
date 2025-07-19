@@ -1,7 +1,10 @@
-const dotenv = require('dotenv');
+import fs from 'fs';
+import path from 'path';
+import fetch from 'node-fetch';    // v2
+import FormData from 'form-data';
+import dotenv from 'dotenv';
+
 dotenv.config();
-const fetch = require('node-fetch');    // v2
-const FormData = require('form-data')
 
 const REMOTE = process.env.REMOTE;
 const LOCAL = process.env.LOCAL;
@@ -9,18 +12,24 @@ const TOKEN = process.env.TOKEN;
 const REMOTE_TOKEN = process.env.REMOTE_TOKEN;
 const TYPES = ['consultants','articles'];
 
-function fetchLocal(path, opts = {}) {
+const BASE_URL = 'http://localhost:1337';
+
+// Helper function to make local HTTP requests
+function fetchLocal(path: string, opts: any = {}) {
   const headers = { ...(opts.headers||{}) };
   if (TOKEN) headers.Authorization = `Bearer ${TOKEN}`;
-  return fetch(LOCAL + path, { ...opts, headers });
+  return fetch(`${BASE_URL}${path}`, { ...opts, headers });
 }
 
-function stripSystemKeys(obj) {
-  if (Array.isArray(obj)) return obj.map(stripSystemKeys);
+// Helper function to strip system keys from objects
+function stripSystemKeys(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(stripSystemKeys);
+  }
   if (obj && typeof obj === 'object') {
-    const clean = {};
-    for (const [k,v] of Object.entries(obj)) {
-      if (!['id','documentId','createdAt','updatedAt','publishedAt','locale'].includes(k)) {
+    const clean: any = {};
+    for (const [k, v] of Object.entries(obj)) {
+      if (!k.startsWith('_') && k !== 'id' && k !== '__v') {
         clean[k] = stripSystemKeys(v);
       }
     }
