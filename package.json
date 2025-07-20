@@ -19,7 +19,10 @@
     "seed:full": "node scripts/seed-database.js full",
     "seed:clear": "node scripts/seed-database.js --clear",
     "seed:setup": "node scripts/setup-environments.js",
-    "seed:env": "node scripts/seed-database.js env"
+    "seed:env": "node scripts/seed-database.js env",
+    "seed:render": "node scripts/seed-database.js --env=render",
+    "seed:render:quick": "node scripts/seed-database.js quick --env=render",
+    "seed:render:full": "node scripts/seed-database.js full --env=render"
   },
   "dependencies": {
     "@strapi/plugin-cloud": "5.15.0",

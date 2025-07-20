@@ -10,9 +10,8 @@ let config;
 
 // Initialize config when needed
 function getConfigInstance() {
-  if (!config) {
-    config = getConfig();
-  }
+  // Always get fresh config to ensure environment changes are picked up
+  config = getConfig();
   return config;
 }
 
@@ -361,8 +360,11 @@ async function makeRequest(endpoint, method = 'GET', data = null) {
     const currentConfig = getConfigInstance();
     const requestConfig = {
       method,
-      url: `${API_BASE_URL}${endpoint}`,
-      headers,
+      url: `${currentConfig.api.baseUrl}${endpoint}`,
+      headers: {
+        'Authorization': `Bearer ${currentConfig.api.token}`,
+        'Content-Type': 'application/json'
+      },
       timeout: currentConfig.api.timeout,
       ...(data && { data })
     };
@@ -536,8 +538,8 @@ async function createPosts(consultants, properties, progress) {
     progress.addError('posts', error);
     console.error(`❌ Failed to create sample posts:`, error.message);
     
-    // Fallback: try to create individual posts
-    console.log('🔄 Trying fallback method...');
+    // Fallback: try to create individual posts without property relationships
+    console.log('🔄 Trying fallback method (without property relationships)...');
     const postsToCreate = currentConfig.generation.posts || enhancedMockData.posts.length;
     const posts = enhancedMockData.posts.slice(0, postsToCreate);
     
@@ -545,14 +547,6 @@ async function createPosts(consultants, properties, progress) {
       try {
         if (currentConfig.validation.validateBeforeCreate) {
           validateData(post, 'post');
-        }
-
-        // Assign property based on configuration
-        let property = null;
-        if (currentConfig.relationships.propertyAssignment === 'matching' && post.post_type === 'Property') {
-          property = getRandomElement(properties);
-        } else if (currentConfig.relationships.propertyAssignment === 'random') {
-          property = Math.random() < 0.3 ? getRandomElement(properties) : null;
         }
         
         const response = await makeRequest('/posts', 'POST', {
@@ -568,7 +562,12 @@ async function createPosts(consultants, properties, progress) {
             save_count: Math.floor(Math.random() * 20),
             is_trending: Math.random() > 0.7,
             is_featured: Math.random() > 0.8,
-            ...(property && { property: property.id }),
+            deal_size: post.deal_size || '$10M - $50M',
+            location: post.location || 'New York, NY',
+            property_type: post.property_type || 'Office',
+            deal_stage: 'Active',
+            roi_estimate: '12.5%',
+            market_trend: 'Rising',
             publishedAt: generateRandomDate().toISOString()
           }
         });
