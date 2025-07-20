@@ -6,9 +6,7 @@ export default {
       path: '/feed',
       handler: 'feed.getFeed',
       config: {
-        auth: {
-          scope: ['authenticated']
-        },
+        auth: false, // Make public for feed access
         policies: [],
         middlewares: []
       }
@@ -18,9 +16,7 @@ export default {
       path: '/feed/personalized',
       handler: 'feed.getPersonalizedFeed',
       config: {
-        auth: {
-          scope: ['authenticated']
-        },
+        auth: false, // Make public for feed access
         policies: [],
         middlewares: []
       }
@@ -30,9 +26,7 @@ export default {
       path: '/feed/trending',
       handler: 'feed.getTrendingFeed',
       config: {
-        auth: {
-          scope: ['authenticated']
-        },
+        auth: false, // Make public for feed access
         policies: [],
         middlewares: []
       }
@@ -66,9 +60,7 @@ export default {
       path: '/feed/discover',
       handler: 'feed.getDiscoverFeed',
       config: {
-        auth: {
-          scope: ['authenticated']
-        },
+        auth: false, // Make public for feed access
         policies: [],
         middlewares: []
       }
@@ -200,9 +192,7 @@ export default {
       path: '/posts/:id/engagement',
       handler: 'feed.getPostEngagement',
       config: {
-        auth: {
-          scope: ['authenticated']
-        },
+        auth: false, // Make public for feed access
         policies: [],
         middlewares: []
       }

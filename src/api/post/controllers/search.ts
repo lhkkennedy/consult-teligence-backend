@@ -1,34 +1,10 @@
 import { factories } from '@strapi/strapi';
+import { getErrorMessage } from '../../../utils/errorHandler';
 
-export default factories.createCoreController('api::post.post', ({ strapi }) => ({
-  async search(ctx) {
-    try {
-      const { query, type = 'posts', filters = {}, page = 1, limit = 20 } = ctx.query;
-
-      if (!query) {
-        return ctx.badRequest('Search query is required');
-      }
-
-      const offset = (page - 1) * limit;
-
-      switch (type) {
-        case 'posts':
-          return await this.searchPosts(ctx, query, filters, offset, limit);
-        case 'users':
-          return await this.searchUsers(ctx, query, filters, offset, limit);
-        case 'properties':
-          return await this.searchProperties(ctx, query, filters, offset, limit);
-        case 'deals':
-          return await this.searchDeals(ctx, query, filters, offset, limit);
-        default:
-          return ctx.badRequest('Invalid search type');
-      }
-    } catch (error) {
-      return ctx.badRequest('Search failed', { error: error.message });
-    }
-  },
-
-  async searchPosts(ctx, query, filters, offset, limit) {
+export default factories.createCoreController('api::post.post', ({ strapi }) => {
+  // Helper methods as private functions
+  const searchPosts = async (ctx: any, query: string, filters: any, offset: number, limit: number) => {
+    const postService = strapi.service('api::post.post');
     const searchQuery = {
       filters: {
         $or: [
@@ -42,37 +18,33 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
         ...filters
       },
       populate: {
-        author: { populate: ['consultant'] },
+        author: true,
         property: true,
         media_urls: true,
         tags: true,
-        reactions: { populate: ['user'] },
-        comments: { populate: ['user', 'replies'] }
+        reactions: true,
+        comments: true
       },
-      sort: { createdAt: 'desc' },
+      sort: { createdAt: 'desc' as any },
       pagination: {
         start: offset,
-        limit
+        limit: limit
       }
     };
 
-    const posts = await strapi.entityService.findMany('api::post.post', searchQuery);
-    const total = await strapi.entityService.count('api::post.post', { filters: searchQuery.filters });
-
+    const posts = await postService.findMany(searchQuery);
     return ctx.send({
-      type: 'posts',
-      query,
-      results: posts,
-      pagination: {
+      data: posts,
+      meta: {
+        total: posts.length,
         page: Math.floor(offset / limit) + 1,
-        limit,
-        total,
-        total_pages: Math.ceil(total / limit)
+        pageSize: limit
       }
     });
-  },
+  };
 
-  async searchUsers(ctx, query, filters, offset, limit) {
+  const searchUsers = async (ctx: any, query: string, filters: any, offset: number, limit: number) => {
+    const userService = strapi.service('plugin::users-permissions.user');
     const searchQuery = {
       filters: {
         $or: [
@@ -82,198 +54,261 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
         ...filters
       },
       populate: ['consultant'],
-      sort: { createdAt: 'desc' },
+      sort: { createdAt: 'desc' as any },
       pagination: {
         start: offset,
-        limit
+        limit: limit
       }
     };
 
-    const users = await strapi.entityService.findMany('plugin::users-permissions.user', searchQuery);
-    const total = await strapi.entityService.count('plugin::users-permissions.user', { filters: searchQuery.filters });
-
+    const users = await userService.findMany(searchQuery);
     return ctx.send({
-      type: 'users',
-      query,
-      results: users,
-      pagination: {
+      data: users,
+      meta: {
+        total: users.length,
         page: Math.floor(offset / limit) + 1,
-        limit,
-        total,
-        total_pages: Math.ceil(total / limit)
+        pageSize: limit
       }
     });
-  },
+  };
 
-  async searchProperties(ctx, query, filters, offset, limit) {
+  const searchProperties = async (ctx: any, query: string, filters: any, offset: number, limit: number) => {
+    const propertyService = strapi.service('api::property.property');
     const searchQuery = {
       filters: {
         $or: [
-          { name: { $containsi: query } },
+          { title: { $containsi: query } },
+          { description: { $containsi: query } },
           { address: { $containsi: query } },
-          { description: { $containsi: query } }
-        ],
-        ...filters
-      },
-      populate: ['owner', 'consultant'],
-      sort: { createdAt: 'desc' },
-      pagination: {
-        start: offset,
-        limit
-      }
-    };
-
-    const properties = await strapi.entityService.findMany('api::property.property', searchQuery);
-    const total = await strapi.entityService.count('api::property.property', { filters: searchQuery.filters });
-
-    return ctx.send({
-      type: 'properties',
-      query,
-      results: properties,
-      pagination: {
-        page: Math.floor(offset / limit) + 1,
-        limit,
-        total,
-        total_pages: Math.ceil(total / limit)
-      }
-    });
-  },
-
-  async searchDeals(ctx, query, filters, offset, limit) {
-    const searchQuery = {
-      filters: {
-        post_type: { $in: ['NewListing', 'ProgressUpdate', 'Closing'] },
-        $or: [
-          { body_md: { $containsi: query } },
-          { location: { $containsi: query } },
-          { deal_size: { $containsi: query } },
           { property_type: { $containsi: query } }
         ],
         ...filters
       },
+      populate: ['images', 'owner'],
+      sort: { createdAt: 'desc' as any },
+      pagination: {
+        start: offset,
+        limit: limit
+      }
+    };
+
+    const properties = await propertyService.findMany(searchQuery);
+    return ctx.send({
+      data: properties,
+      meta: {
+        total: properties.length,
+        page: Math.floor(offset / limit) + 1,
+        pageSize: limit
+      }
+    });
+  };
+
+  const searchDeals = async (ctx: any, query: string, filters: any, offset: number, limit: number) => {
+    const postService = strapi.service('api::post.post');
+    const searchQuery = {
+      filters: {
+        $and: [
+          {
+            $or: [
+              { body_md: { $containsi: query } },
+              { location: { $containsi: query } },
+              { deal_size: { $containsi: query } },
+              { property_type: { $containsi: query } }
+            ]
+          },
+          { post_type: { $in: ['NewListing', 'ProgressUpdate'] } },
+          ...filters
+        ]
+      },
       populate: {
-        author: { populate: ['consultant'] },
+        author: true,
         property: true,
         media_urls: true,
         tags: true
       },
-      sort: { createdAt: 'desc' },
+      sort: { createdAt: 'desc' as any },
       pagination: {
         start: offset,
-        limit
+        limit: limit
       }
     };
 
-    const deals = await strapi.entityService.findMany('api::post.post', searchQuery);
-    const total = await strapi.entityService.count('api::post.post', { filters: searchQuery.filters });
-
+    const deals = await postService.findMany(searchQuery);
     return ctx.send({
-      type: 'deals',
-      query,
-      results: deals,
-      pagination: {
+      data: deals,
+      meta: {
+        total: deals.length,
         page: Math.floor(offset / limit) + 1,
-        limit,
-        total,
-        total_pages: Math.ceil(total / limit)
+        pageSize: limit
       }
     });
-  },
+  };
 
-  async discover(ctx) {
-    try {
-      const { user } = ctx.state;
-      if (!user) {
-        return ctx.unauthorized('User not authenticated');
-      }
-
-      const { type = 'connections', limit = 10 } = ctx.query;
-
-      switch (type) {
-        case 'connections':
-          return await this.discoverConnections(ctx, user.id, limit);
-        case 'topics':
-          return await this.discoverTopics(ctx, user.id, limit);
-        case 'deals':
-          return await this.discoverDeals(ctx, user.id, limit);
-        case 'trending':
-          return await this.discoverTrending(ctx, user.id, limit);
-        default:
-          return ctx.badRequest('Invalid discovery type');
-      }
-    } catch (error) {
-      return ctx.badRequest('Discovery failed', { error: error.message });
-    }
-  },
-
-  async discoverConnections(ctx, userId, limit) {
-    const userConnections = await strapi.service('api::post.post').getUserConnections(userId);
-    
-    const allUsers = await strapi.entityService.findMany('plugin::users-permissions.user', {
-      filters: { id: { $ne: userId } },
+  const discoverConnections = async (ctx: any, userId: string, limit: number) => {
+    const connections = await strapi.entityService.findMany('plugin::users-permissions.user', {
+      filters: {
+        id: { $ne: userId }
+      },
       populate: ['consultant'],
-      pagination: { limit: parseInt(limit) }
+      sort: { createdAt: 'desc' as any },
+      pagination: {
+        limit
+      }
     });
-
-    const recommendations = allUsers
-      .filter(user => !userConnections.includes(user.id))
-      .slice(0, parseInt(limit));
 
     return ctx.send({
       type: 'connections',
-      recommendations
+      results: connections
     });
-  },
+  };
 
-  async discoverTopics(ctx, userId, limit) {
-    const tags = await strapi.entityService.findMany('api::tag.tag', {
-      filters: { is_trending: true },
-      sort: { usage_count: 'desc' },
-      pagination: { limit: parseInt(limit) }
+  const discoverTopics = async (ctx: any, userId: string, limit: number) => {
+    const topics = await strapi.entityService.findMany('api::post.post', {
+      filters: {
+        post_type: 'Insight'
+      },
+      populate: {
+        author: { populate: ['consultant'] },
+        tags: true
+      },
+      sort: { createdAt: 'desc' as any },
+      pagination: {
+        limit
+      }
     });
 
     return ctx.send({
       type: 'topics',
-      recommendations: tags.map(tag => tag.name)
+      results: topics
     });
-  },
+  };
 
-  async discoverDeals(ctx, userId, limit) {
+  const discoverDeals = async (ctx: any, userId: string, limit: number) => {
     const deals = await strapi.entityService.findMany('api::post.post', {
-      filters: { 
-        post_type: { $in: ['NewListing', 'ProgressUpdate'] },
-        is_featured: true 
+      filters: {
+        post_type: { $in: ['NewListing', 'ProgressUpdate', 'Closing'] }
       },
-      sort: { engagement_score: 'desc' },
-      pagination: { limit: parseInt(limit) },
       populate: {
         author: { populate: ['consultant'] },
         property: true
+      },
+      sort: { createdAt: 'desc' as any },
+      pagination: {
+        limit
       }
     });
 
     return ctx.send({
       type: 'deals',
-      recommendations: deals
+      results: deals
     });
-  },
+  };
 
-  async discoverTrending(ctx, userId, limit) {
+  const discoverTrending = async (ctx: any, userId: string, limit: number) => {
     const trending = await strapi.entityService.findMany('api::post.post', {
-      filters: { is_trending: true },
-      sort: { engagement_score: 'desc' },
-      pagination: { limit: parseInt(limit) },
       populate: {
         author: { populate: ['consultant'] },
-        property: true,
-        media_urls: true,
-        tags: true
+        reactions: { populate: ['user'] },
+        comments: { populate: ['user'] }
+      },
+      sort: { createdAt: 'desc' as any },
+      pagination: {
+        limit
       }
     });
 
     return ctx.send({
       type: 'trending',
-      recommendations: trending
+      results: trending
     });
-  }
-}));
+  };
+
+  return {
+    async search(ctx) {
+      try {
+        const { query, type = 'posts', filters = {}, page = 1, limit = 20 } = ctx.query;
+
+        if (!query) {
+          return ctx.badRequest('Search query is required');
+        }
+
+        const offset = (Number(page) - 1) * Number(limit);
+
+        switch (type) {
+          case 'posts':
+            return await searchPosts(ctx, query as string, filters as any, offset, Number(limit));
+          case 'users':
+            return await searchUsers(ctx, query as string, filters as any, offset, Number(limit));
+          case 'properties':
+            return await searchProperties(ctx, query as string, filters as any, offset, Number(limit));
+          case 'deals':
+            return await searchDeals(ctx, query as string, filters as any, offset, Number(limit));
+          default:
+            return await searchPosts(ctx, query as string, filters as any, offset, Number(limit));
+        }
+      } catch (error: unknown) {
+        return ctx.badRequest('Search failed', { error: getErrorMessage(error) });
+      }
+    },
+
+    async discover(ctx) {
+      try {
+        const { user } = ctx.state;
+        if (!user) {
+          return ctx.unauthorized('User not authenticated');
+        }
+
+        const { type = 'connections', limit = 10 } = ctx.query;
+
+        switch (type) {
+          case 'connections':
+            return await discoverConnections(ctx, user.id, Number(limit));
+          case 'topics':
+            return await discoverTopics(ctx, user.id, Number(limit));
+          case 'deals':
+            return await discoverDeals(ctx, user.id, Number(limit));
+          case 'trending':
+            return await discoverTrending(ctx, user.id, Number(limit));
+          default:
+            return ctx.badRequest('Invalid discovery type');
+        }
+      } catch (error: unknown) {
+        return ctx.badRequest('Discovery failed', { error: getErrorMessage(error) });
+      }
+    },
+
+    async discoverTrending(ctx) {
+      try {
+        const { userId, limit = 10 } = ctx.query;
+        
+        if (!userId) {
+          return ctx.badRequest('User ID is required');
+        }
+
+        const postService = strapi.service('api::post.post');
+        // Get trending posts based on engagement
+        const trendingPosts = await postService.findMany({
+          filters: {
+            engagement_score: { $gte: 50 }
+          },
+          populate: {
+            author: true,
+            property: true,
+            tags: true
+          },
+          sort: { engagement_score: 'desc' as any },
+          pagination: { limit: Number(limit) }
+        });
+
+        return ctx.send({
+          data: trendingPosts,
+          meta: {
+            total: trendingPosts.length
+          }
+        });
+      } catch (error: unknown) {
+        return ctx.badRequest('Failed to discover trending content', { error: getErrorMessage(error) });
+      }
+    }
+  };
+});

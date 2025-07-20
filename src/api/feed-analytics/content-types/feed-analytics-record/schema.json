@@ -2,8 +2,8 @@
   "kind": "collectionType",
   "collectionName": "feed_analytics",
   "info": {
-    "singularName": "feed-analytics",
-    "pluralName": "feed-analytics",
+    "singularName": "feed-analytics-record",
+    "pluralName": "feed-analytics-records",
     "displayName": "Feed Analytics",
     "description": "User engagement analytics and insights"
   },

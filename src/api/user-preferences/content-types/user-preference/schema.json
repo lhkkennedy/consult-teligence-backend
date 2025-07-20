@@ -2,7 +2,7 @@
   "kind": "collectionType",
   "collectionName": "user_preferences",
   "info": {
-    "singularName": "user-preferences",
+    "singularName": "user-preference",
     "pluralName": "user-preferences",
     "displayName": "User Preferences",
     "description": "User preferences for personalized feed and notifications"

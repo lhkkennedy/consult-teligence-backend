@@ -53,6 +53,15 @@
     "market_trend": {
       "type": "string"
     },
+    "visibility": {
+      "type": "enumeration",
+      "enum": [
+        "Public",
+        "Private",
+        "Followers"
+      ],
+      "default": "Public"
+    },
     "read_time": {
       "type": "integer",
       "default": 0

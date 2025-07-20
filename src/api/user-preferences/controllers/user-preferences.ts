@@ -1,6 +1,7 @@
 import { factories } from '@strapi/strapi';
+import { getErrorMessage } from '../../../utils/errorHandler';
 
-export default factories.createCoreController('api::user-preferences.user-preferences', ({ strapi }) => ({
+export default factories.createCoreController('api::user-preferences.user-preference', ({ strapi }) => ({
   async getUserPreferences(ctx) {
     try {
       const { user } = ctx.state;
@@ -8,90 +9,99 @@ export default factories.createCoreController('api::user-preferences.user-prefer
         return ctx.unauthorized('User not authenticated');
       }
 
-      const preferences = await strapi.entityService.findMany('api::user-preferences.user-preferences', {
-        filters: { user: user.id }
+      const userPreferencesService = strapi.service('api::user-preferences.user-preference');
+      const preferences = await userPreferencesService.findMany({
+        filters: { user: { id: user.id } }
       });
 
       if (preferences.length === 0) {
         // Create default preferences
-        const defaultPrefs = await strapi.entityService.create('api::user-preferences.user-preferences', {
+        const defaultPrefs = await userPreferencesService.create({
           data: {
             user: user.id,
-            preferred_deal_sizes: ['$100K-$500K', '$500K-$1M', '$1M-$5M'],
-            preferred_property_types: ['Residential', 'Commercial', 'Industrial'],
-            preferred_locations: ['New York', 'Los Angeles', 'Chicago'],
-            preferred_post_types: ['NewListing', 'ProgressUpdate', 'Insight'],
+            preferred_post_types: ['NewListing', 'MarketUpdate', 'ProgressUpdate'],
+            preferred_deal_sizes: ['$1M-$5M', '$5M-$10M', '$10M+'],
+            preferred_locations: ['New York', 'Los Angeles', 'Miami'],
+            preferred_property_types: ['Office', 'Retail', 'Industrial'],
             notifications: {
-              new_deals: true,
-              market_updates: true,
-              mentions: true,
-              connection_activity: true,
-              deal_updates: true,
-              trending_content: true
+              email_notifications: true,
+              push_notifications: true,
+              feed_updates: true,
+              market_alerts: true,
+              deal_alerts: true
             },
             privacy: {
               profile_visibility: 'public',
-              show_online_status: true,
+              show_activity: true,
               allow_messages: true,
-              show_activity: true
+              show_connections: true
             },
             algorithm: {
-              content_relevance_weight: 0.4,
-              connection_weight: 0.3,
-              engagement_weight: 0.2,
-              recency_weight: 0.1,
-              trending_weight: 0.1
+              content_priority: 'engagement',
+              feed_frequency: 'realtime',
+              personalization_level: 'high'
             }
           }
         });
-
         return ctx.send(defaultPrefs);
       }
 
       return ctx.send(preferences[0]);
-    } catch (error) {
-      return ctx.badRequest('Failed to get user preferences', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to get user preferences', { error: getErrorMessage(error) });
     }
   },
 
-  async updateUserPreferences(ctx) {
+  async updateContentPreferences(ctx) {
     try {
       const { user } = ctx.state;
       if (!user) {
         return ctx.unauthorized('User not authenticated');
       }
 
-      const preferences = await strapi.entityService.findMany('api::user-preferences.user-preferences', {
-        filters: { user: user.id }
-      });
+      const { preferred_post_types, preferred_deal_sizes, preferred_locations, preferred_property_types } = ctx.request.body;
 
-      const updateData = {
-        ...ctx.request.body
-      };
+      const userPreferencesService = strapi.service('api::user-preferences.user-preference');
+      const preferences = await userPreferencesService.findMany({
+        filters: { user: { id: user.id } }
+      });
 
       let result;
       if (preferences.length === 0) {
         // Create new preferences
-        result = await strapi.entityService.create('api::user-preferences.user-preferences', {
+        result = await userPreferencesService.create({
           data: {
-            ...updateData,
-            user: user.id
+            user: user.id,
+            preferred_post_types,
+            preferred_deal_sizes,
+            preferred_locations,
+            preferred_property_types
           }
         });
       } else {
         // Update existing preferences
-        result = await strapi.entityService.update('api::user-preferences.user-preferences', preferences[0].id, {
-          data: updateData
+        const currentPrefs = preferences[0];
+        if (!currentPrefs) {
+          return ctx.notFound('User preferences not found');
+        }
+        
+        result = await userPreferencesService.update(currentPrefs.documentId || currentPrefs.id, {
+          data: {
+            preferred_post_types: preferred_post_types || currentPrefs.preferred_post_types,
+            preferred_deal_sizes: preferred_deal_sizes || currentPrefs.preferred_deal_sizes,
+            preferred_locations: preferred_locations || currentPrefs.preferred_locations,
+            preferred_property_types: preferred_property_types || currentPrefs.preferred_property_types
+          }
         });
       }
 
       return ctx.send(result);
-    } catch (error) {
-      return ctx.badRequest('Failed to update user preferences', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to update content preferences', { error: getErrorMessage(error) });
     }
   },
 
-  async updateNotificationSettings(ctx) {
+  async updateNotificationPreferences(ctx) {
     try {
       const { user } = ctx.state;
       if (!user) {
@@ -99,31 +109,48 @@ export default factories.createCoreController('api::user-preferences.user-prefer
       }
 
       const { notifications } = ctx.request.body;
-
-      const preferences = await strapi.entityService.findMany('api::user-preferences.user-preferences', {
-        filters: { user: user.id }
-      });
-
-      if (preferences.length === 0) {
-        return ctx.notFound('User preferences not found');
+      if (!notifications) {
+        return ctx.badRequest('Notification preferences are required');
       }
 
-      const result = await strapi.entityService.update('api::user-preferences.user-preferences', preferences[0].id, {
-        data: {
-          notifications: {
-            ...preferences[0].notifications,
-            ...notifications
-          }
-        }
+      const userPreferencesService = strapi.service('api::user-preferences.user-preference');
+      const preferences = await userPreferencesService.findMany({
+        filters: { user: { id: user.id } }
       });
 
+      let result;
+      if (preferences.length === 0) {
+        // Create new preferences
+        result = await userPreferencesService.create({
+          data: {
+            user: user.id,
+            notifications
+          }
+        });
+      } else {
+        // Update existing preferences
+        const currentPrefs = preferences[0];
+        if (!currentPrefs) {
+          return ctx.notFound('User preferences not found');
+        }
+        
+        result = await userPreferencesService.update(currentPrefs.documentId || currentPrefs.id, {
+          data: {
+            notifications: {
+              ...(currentPrefs.notifications as any || {}),
+              ...notifications
+            }
+          }
+        });
+      }
+
       return ctx.send(result);
-    } catch (error) {
-      return ctx.badRequest('Failed to update notification settings', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to update notification preferences', { error: getErrorMessage(error) });
     }
   },
 
-  async updatePrivacySettings(ctx) {
+  async updatePrivacyPreferences(ctx) {
     try {
       const { user } = ctx.state;
       if (!user) {
@@ -131,27 +158,44 @@ export default factories.createCoreController('api::user-preferences.user-prefer
       }
 
       const { privacy } = ctx.request.body;
-
-      const preferences = await strapi.entityService.findMany('api::user-preferences.user-preferences', {
-        filters: { user: user.id }
-      });
-
-      if (preferences.length === 0) {
-        return ctx.notFound('User preferences not found');
+      if (!privacy) {
+        return ctx.badRequest('Privacy preferences are required');
       }
 
-      const result = await strapi.entityService.update('api::user-preferences.user-preferences', preferences[0].id, {
-        data: {
-          privacy: {
-            ...preferences[0].privacy,
-            ...privacy
-          }
-        }
+      const userPreferencesService = strapi.service('api::user-preferences.user-preference');
+      const preferences = await userPreferencesService.findMany({
+        filters: { user: { id: user.id } }
       });
 
+      let result;
+      if (preferences.length === 0) {
+        // Create new preferences
+        result = await userPreferencesService.create({
+          data: {
+            user: user.id,
+            privacy
+          }
+        });
+      } else {
+        // Update existing preferences
+        const currentPrefs = preferences[0];
+        if (!currentPrefs) {
+          return ctx.notFound('User preferences not found');
+        }
+        
+        result = await userPreferencesService.update(currentPrefs.documentId || currentPrefs.id, {
+          data: {
+            privacy: {
+              ...(currentPrefs.privacy as any || {}),
+              ...privacy
+            }
+          }
+        });
+      }
+
       return ctx.send(result);
-    } catch (error) {
-      return ctx.badRequest('Failed to update privacy settings', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to update privacy preferences', { error: getErrorMessage(error) });
     }
   },
 
@@ -163,86 +207,99 @@ export default factories.createCoreController('api::user-preferences.user-prefer
       }
 
       const { algorithm } = ctx.request.body;
-
-      const preferences = await strapi.entityService.findMany('api::user-preferences.user-preferences', {
-        filters: { user: user.id }
-      });
-
-      if (preferences.length === 0) {
-        return ctx.notFound('User preferences not found');
+      if (!algorithm) {
+        return ctx.badRequest('Algorithm preferences are required');
       }
 
-      const result = await strapi.entityService.update('api::user-preferences.user-preferences', preferences[0].id, {
-        data: {
-          algorithm: {
-            ...preferences[0].algorithm,
-            ...algorithm
-          }
-        }
+      const userPreferencesService = strapi.service('api::user-preferences.user-preference');
+      const preferences = await userPreferencesService.findMany({
+        filters: { user: { id: user.id } }
       });
 
+      let result;
+      if (preferences.length === 0) {
+        // Create new preferences
+        result = await userPreferencesService.create({
+          data: {
+            user: user.id,
+            algorithm
+          }
+        });
+      } else {
+        // Update existing preferences
+        const currentPrefs = preferences[0];
+        if (!currentPrefs) {
+          return ctx.notFound('User preferences not found');
+        }
+        
+        result = await userPreferencesService.update(currentPrefs.documentId || currentPrefs.id, {
+          data: {
+            algorithm: {
+              ...(currentPrefs.algorithm as any || {}),
+              ...algorithm
+            }
+          }
+        });
+      }
+
       return ctx.send(result);
-    } catch (error) {
-      return ctx.badRequest('Failed to update algorithm preferences', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to update algorithm preferences', { error: getErrorMessage(error) });
     }
   },
 
-  async resetToDefaults(ctx) {
+  async resetPreferences(ctx) {
     try {
       const { user } = ctx.state;
       if (!user) {
         return ctx.unauthorized('User not authenticated');
       }
 
-      const preferences = await strapi.entityService.findMany('api::user-preferences.user-preferences', {
-        filters: { user: user.id }
+      const userPreferencesService = strapi.service('api::user-preferences.user-preference');
+      const preferences = await userPreferencesService.findMany({
+        filters: { user: { id: user.id } }
       });
 
-      const defaultPrefs = {
-        preferred_deal_sizes: ['$100K-$500K', '$500K-$1M', '$1M-$5M'],
-        preferred_property_types: ['Residential', 'Commercial', 'Industrial'],
-        preferred_locations: ['New York', 'Los Angeles', 'Chicago'],
-        preferred_post_types: ['NewListing', 'ProgressUpdate', 'Insight'],
-        notifications: {
-          new_deals: true,
-          market_updates: true,
-          mentions: true,
-          connection_activity: true,
-          deal_updates: true,
-          trending_content: true
-        },
-        privacy: {
-          profile_visibility: 'public',
-          show_online_status: true,
-          allow_messages: true,
-          show_activity: true
-        },
-        algorithm: {
-          content_relevance_weight: 0.4,
-          connection_weight: 0.3,
-          engagement_weight: 0.2,
-          recency_weight: 0.1,
-          trending_weight: 0.1
-        }
-      };
-
-      let result;
       if (preferences.length === 0) {
-        result = await strapi.entityService.create('api::user-preferences.user-preferences', {
-          data: {
-            ...defaultPrefs,
-            user: user.id
-          }
-        });
-      } else {
-        result = await strapi.entityService.update('api::user-preferences.user-preferences', preferences[0].id, {
-          data: defaultPrefs
-        });
+        return ctx.notFound('No preferences found to reset');
       }
 
+      const preference = preferences[0];
+      if (!preference) {
+        return ctx.notFound('User preferences not found');
+      }
+
+      // Reset to default values
+      const result = await userPreferencesService.update(preference.documentId || preference.id, {
+        data: {
+          preferred_post_types: ['NewListing', 'MarketUpdate', 'ProgressUpdate'],
+          preferred_deal_sizes: ['$1M-$5M', '$5M-$10M', '$10M+'],
+          preferred_locations: ['New York', 'Los Angeles', 'Miami'],
+          preferred_property_types: ['Office', 'Retail', 'Industrial'],
+          notifications: {
+            email_notifications: true,
+            push_notifications: true,
+            feed_updates: true,
+            market_alerts: true,
+            deal_alerts: true
+          },
+          privacy: {
+            profile_visibility: 'public',
+            show_activity: true,
+            allow_messages: true,
+            show_connections: true
+          },
+          algorithm: {
+            content_priority: 'engagement',
+            feed_frequency: 'realtime',
+            personalization_level: 'high'
+          }
+        }
+      });
+
       return ctx.send(result);
-    } catch (error) {
-      return ctx.badRequest('Failed to reset preferences to defaults', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to reset preferences', { error: getErrorMessage(error) });
     }
   }
 }));

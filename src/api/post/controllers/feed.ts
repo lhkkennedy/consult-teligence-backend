@@ -1,4 +1,5 @@
 import { factories } from '@strapi/strapi';
+import { getErrorMessage } from '../../../utils/errorHandler';
 
 export default factories.createCoreController('api::post.post', ({ strapi }) => ({
   async getFeed(ctx) {
@@ -16,8 +17,8 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       const result = await strapi.service('api::post.post').getFeed(request);
       
       return ctx.send(result);
-    } catch (error) {
-      return ctx.badRequest('Failed to fetch feed', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to fetch feed', { error: getErrorMessage(error) });
     }
   },
 
@@ -32,19 +33,19 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       const posts = await strapi.service('api::post.post').getPersonalizedFeed(user.id, preferences);
       
       return ctx.send(posts);
-    } catch (error) {
-      return ctx.badRequest('Failed to fetch personalized feed', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to fetch personalized feed', { error: getErrorMessage(error) });
     }
   },
 
   async getTrendingFeed(ctx) {
     try {
       const { limit = 20 } = ctx.query;
-      const posts = await strapi.service('api::post.post').getTrendingFeed(parseInt(limit));
+      const posts = await strapi.service('api::post.post').getTrendingFeed(parseInt(limit as string));
       
       return ctx.send(posts);
-    } catch (error) {
-      return ctx.badRequest('Failed to fetch trending feed', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to fetch trending feed', { error: getErrorMessage(error) });
     }
   },
 
@@ -56,11 +57,11 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       }
 
       const { limit = 20 } = ctx.query;
-      const posts = await strapi.service('api::post.post').getFollowingFeed(user.id, parseInt(limit));
+      const posts = await strapi.service('api::post.post').getFollowingFeed(user.id, parseInt(limit as string));
       
       return ctx.send(posts);
-    } catch (error) {
-      return ctx.badRequest('Failed to fetch following feed', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to fetch following feed', { error: getErrorMessage(error) });
     }
   },
 
@@ -72,11 +73,11 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       }
 
       const { limit = 20 } = ctx.query;
-      const posts = await strapi.service('api::post.post').getSavedFeed(user.id, parseInt(limit));
+      const posts = await strapi.service('api::post.post').getSavedFeed(user.id, parseInt(limit as string));
       
       return ctx.send(posts);
-    } catch (error) {
-      return ctx.badRequest('Failed to fetch saved feed', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to fetch saved feed', { error: getErrorMessage(error) });
     }
   },
 
@@ -88,11 +89,11 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       }
 
       const { limit = 20 } = ctx.query;
-      const posts = await strapi.service('api::post.post').getDiscoverFeed(user.id, parseInt(limit));
+      const posts = await strapi.service('api::post.post').getDiscoverFeed(user.id, parseInt(limit as string));
       
       return ctx.send(posts);
-    } catch (error) {
-      return ctx.badRequest('Failed to fetch discover feed', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to fetch discover feed', { error: getErrorMessage(error) });
     }
   },
 
@@ -106,8 +107,8 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       const posts = await strapi.service('api::post.post').refreshFeed(user.id);
       
       return ctx.send(posts);
-    } catch (error) {
-      return ctx.badRequest('Failed to refresh feed', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to refresh feed', { error: getErrorMessage(error) });
     }
   },
 
@@ -134,8 +135,8 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       });
 
       return ctx.send(reaction);
-    } catch (error) {
-      return ctx.badRequest('Failed to add reaction', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to add reaction', { error: getErrorMessage(error) });
     }
   },
 
@@ -150,8 +151,8 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       await strapi.service('api::post.post').removeReaction(id, user.id);
       
       return ctx.send({ success: true });
-    } catch (error) {
-      return ctx.badRequest('Failed to remove reaction', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to remove reaction', { error: getErrorMessage(error) });
     }
   },
 
@@ -178,8 +179,8 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       });
 
       return ctx.send(comment);
-    } catch (error) {
-      return ctx.badRequest('Failed to add comment', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to add comment', { error: getErrorMessage(error) });
     }
   },
 
@@ -202,8 +203,8 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       });
 
       return ctx.send(save);
-    } catch (error) {
-      return ctx.badRequest('Failed to save post', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to save post', { error: getErrorMessage(error) });
     }
   },
 
@@ -218,8 +219,8 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       await strapi.service('api::post.post').unsavePost(id, user.id);
       
       return ctx.send({ success: true });
-    } catch (error) {
-      return ctx.badRequest('Failed to unsave post', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to unsave post', { error: getErrorMessage(error) });
     }
   },
 
@@ -231,13 +232,13 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       }
 
       const { id } = ctx.params;
-      const { share_type, share_platform } = ctx.request.body;
+      const { share_type, recipient_email, message } = ctx.request.body;
 
       if (!share_type) {
         return ctx.badRequest('Share type is required');
       }
 
-      const share = await strapi.service('api::post.post').sharePost(id, user.id, share_type, share_platform);
+      const share = await strapi.service('api::post.post').sharePost(id, user.id, share_type, recipient_email, message);
       
       // Track analytics
       await strapi.service('api::feed-analytics.feed-analytics').trackUserActivity(user.id, {
@@ -246,8 +247,8 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       });
 
       return ctx.send(share);
-    } catch (error) {
-      return ctx.badRequest('Failed to share post', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to share post', { error: getErrorMessage(error) });
     }
   },
 
@@ -259,20 +260,20 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       }
 
       const { id } = ctx.params;
-      const { view_duration, source } = ctx.request.body;
+      const { duration } = ctx.request.body;
 
-      const view = await strapi.service('api::post.post').trackView(id, user.id, view_duration, source);
+      await strapi.service('api::post.post').trackView(id, user.id, duration);
       
       // Track analytics
       await strapi.service('api::feed-analytics.feed-analytics').trackUserActivity(user.id, {
         type: 'view',
         post_id: id,
-        duration: view_duration || 0
+        duration
       });
 
-      return ctx.send(view);
-    } catch (error) {
-      return ctx.badRequest('Failed to track view', { error: error.message });
+      return ctx.send({ success: true });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to track view', { error: getErrorMessage(error) });
     }
   },
 
@@ -281,13 +282,9 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       const { id } = ctx.params;
       const engagement = await strapi.service('api::post.post').getPostEngagement(id);
       
-      if (!engagement) {
-        return ctx.notFound('Post not found');
-      }
-
       return ctx.send(engagement);
-    } catch (error) {
-      return ctx.badRequest('Failed to get post engagement', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to get post engagement', { error: getErrorMessage(error) });
     }
   },
 
@@ -302,8 +299,8 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       const reaction = await strapi.service('api::post.post').getUserReaction(id, user.id);
       
       return ctx.send(reaction);
-    } catch (error) {
-      return ctx.badRequest('Failed to get user reaction', { error: error.message });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to get user reaction', { error: getErrorMessage(error) });
     }
   },
 
@@ -317,9 +314,9 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       const { id } = ctx.params;
       const isSaved = await strapi.service('api::post.post').isPostSaved(id, user.id);
       
-      return ctx.send({ is_saved: isSaved });
-    } catch (error) {
-      return ctx.badRequest('Failed to check if post is saved', { error: error.message });
+      return ctx.send({ isSaved });
+    } catch (error: unknown) {
+      return ctx.badRequest('Failed to check if post is saved', { error: getErrorMessage(error) });
     }
   }
 }));

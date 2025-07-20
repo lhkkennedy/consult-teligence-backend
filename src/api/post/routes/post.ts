@@ -5,9 +5,7 @@ export default {
       path: '/posts',
       handler: 'post.find',
       config: {
-        auth: {
-          scope: ['authenticated']
-        },
+        auth: false, // Make public for feed access
         policies: [],
         middlewares: []
       }
@@ -17,9 +15,7 @@ export default {
       path: '/posts/:id',
       handler: 'post.findOne',
       config: {
-        auth: {
-          scope: ['authenticated']
-        },
+        auth: false, // Make public for feed access
         policies: [],
         middlewares: []
       }
@@ -29,9 +25,27 @@ export default {
       path: '/posts',
       handler: 'post.create',
       config: {
-        auth: {
-          scope: ['authenticated']
-        },
+        auth: false, // Temporarily public for testing
+        policies: [],
+        middlewares: []
+      }
+    },
+    {
+      method: 'POST',
+      path: '/posts/sample',
+      handler: 'post.createSamplePosts',
+      config: {
+        auth: false, // Public for testing
+        policies: [],
+        middlewares: []
+      }
+    },
+    {
+      method: 'POST',
+      path: '/posts/attach-properties',
+      handler: 'post.attachPropertiesToPosts',
+      config: {
+        auth: false, // Public for testing
         policies: [],
         middlewares: []
       }
@@ -41,9 +55,7 @@ export default {
       path: '/posts/:id',
       handler: 'post.update',
       config: {
-        auth: {
-          scope: ['authenticated']
-        },
+        auth: false, // Temporarily public for testing
         policies: [],
         middlewares: []
       }

@@ -3,7 +3,7 @@ export default {
     {
       method: 'GET',
       path: '/analytics/feed',
-      handler: 'analytics.getFeedAnalytics',
+      handler: 'feed-analytics-record.getFeedAnalytics',
       config: {
         auth: {
           scope: ['authenticated']
@@ -15,7 +15,7 @@ export default {
     {
       method: 'GET',
       path: '/analytics/market',
-      handler: 'analytics.getMarketInsights',
+      handler: 'feed-analytics-record.getMarketInsights',
       config: {
         auth: {
           scope: ['authenticated']
@@ -27,7 +27,7 @@ export default {
     {
       method: 'GET',
       path: '/analytics/trending-topics',
-      handler: 'analytics.getTrendingTopics',
+      handler: 'feed-analytics-record.getTrendingTopics',
       config: {
         auth: {
           scope: ['authenticated']
@@ -39,7 +39,7 @@ export default {
     {
       method: 'POST',
       path: '/analytics/update-engagement-scores',
-      handler: 'analytics.updateEngagementScores',
+      handler: 'feed-analytics-record.updateEngagementScores',
       config: {
         auth: {
           scope: ['authenticated']
@@ -51,7 +51,7 @@ export default {
     {
       method: 'POST',
       path: '/analytics/track-activity',
-      handler: 'analytics.trackActivity',
+      handler: 'feed-analytics-record.trackActivity',
       config: {
         auth: {
           scope: ['authenticated']

@@ -3,7 +3,7 @@ export default {
     {
       method: 'GET',
       path: '/feed-analytics',
-      handler: 'feed-analytics.find',
+      handler: 'feed-analytics-record.find',
       config: {
         auth: {
           scope: ['authenticated']
@@ -15,7 +15,7 @@ export default {
     {
       method: 'GET',
       path: '/feed-analytics/:id',
-      handler: 'feed-analytics.findOne',
+      handler: 'feed-analytics-record.findOne',
       config: {
         auth: {
           scope: ['authenticated']
@@ -27,7 +27,7 @@ export default {
     {
       method: 'POST',
       path: '/feed-analytics',
-      handler: 'feed-analytics.create',
+      handler: 'feed-analytics-record.create',
       config: {
         auth: {
           scope: ['authenticated']
@@ -39,7 +39,7 @@ export default {
     {
       method: 'PUT',
       path: '/feed-analytics/:id',
-      handler: 'feed-analytics.update',
+      handler: 'feed-analytics-record.update',
       config: {
         auth: {
           scope: ['authenticated']
@@ -51,7 +51,7 @@ export default {
     {
       method: 'DELETE',
       path: '/feed-analytics/:id',
-      handler: 'feed-analytics.delete',
+      handler: 'feed-analytics-record.delete',
       config: {
         auth: {
           scope: ['authenticated']

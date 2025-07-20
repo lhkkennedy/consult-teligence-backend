@@ -1,344 +1,298 @@
 import { factories } from '@strapi/strapi';
 
 export default factories.createCoreService('api::post.post', ({ strapi }) => ({
-  async getFeed(request: any) {
-    const {
-      page = 1,
-      limit = 20,
-      category = 'all',
-      sort_by = 'recent',
-      filters = {},
-      search = '',
-      user_id
-    } = request;
+  async generatePersonalizedFeed(userId: string, page: number = 1, limit: number = 20) {
+    try {
+      const postService = strapi.service('api::post.post');
+      const userPreferencesService = strapi.service('api::user-preferences.user-preference');
+      const friendsService = strapi.service('api::friends.friend');
 
-    const offset = (page - 1) * limit;
-    
-    // Build query based on category
-    let query: any = {
-      populate: {
-        author: {
-          populate: ['consultant']
+      // Get user preferences
+      const userPrefs = await userPreferencesService.findMany({
+        filters: { user: { id: userId } }
+      });
+
+      const preferences = userPrefs[0] || {
+        preferred_post_types: ['NewListing', 'MarketUpdate', 'ProgressUpdate'],
+        preferred_deal_sizes: ['$1M-$5M', '$5M-$10M', '$10M+'],
+        preferred_locations: ['New York', 'Los Angeles', 'Miami'],
+        preferred_property_types: ['Office', 'Retail', 'Industrial']
+      };
+
+      // Get user connections (friends)
+      const userConnections = await this.getUserConnections(userId);
+
+      // Build feed query
+      const feedQuery = {
+        filters: {
+          $or: [
+            // Posts from connections
+            { author: { id: { $in: userConnections } } },
+            // Posts matching user preferences
+            {
+              $and: [
+                { post_type: { $in: preferences.preferred_post_types } },
+                {
+                  $or: [
+                    { deal_size: { $in: preferences.preferred_deal_sizes } },
+                    { location: { $in: preferences.preferred_locations } },
+                    { property_type: { $in: preferences.preferred_property_types } }
+                  ]
+                }
+              ]
+            },
+            // High engagement posts
+            { engagement_score: { $gte: 50 } }
+          ]
         },
-        property: true,
-        media_urls: true,
-        tags: true,
-        reactions: {
-          populate: ['user']
-        },
-        comments: {
-          populate: ['user', 'replies']
-        },
-        _count: {
+        populate: {
+          author: { populate: ['consultant'] },
+          property: true,
+          media_urls: true,
+          tags: true,
           reactions: true,
           comments: true,
           saves: true,
           shares: true,
           views: true
+        },
+        sort: { createdAt: 'desc' as any },
+        pagination: {
+          page,
+          pageSize: limit
         }
-      },
-      pagination: {
-        start: offset,
-        limit
-      }
-    };
-
-    // Apply filters
-    if (filters.post_types?.length) {
-      query.filters = { ...query.filters, post_type: { $in: filters.post_types } };
-    }
-    if (filters.sentiments?.length) {
-      query.filters = { ...query.filters, sentiment: { $in: filters.sentiments } };
-    }
-    if (filters.date_range) {
-      const date = new Date();
-      date.setDate(date.getDate() - parseInt(filters.date_range));
-      query.filters = { ...query.filters, createdAt: { $gte: date } };
-    }
-    if (filters.has_media) {
-      query.filters = { ...query.filters, media_urls: { $notNull: true } };
-    }
-    if (filters.deal_size) {
-      query.filters = { ...query.filters, deal_size: filters.deal_size };
-    }
-    if (filters.location) {
-      query.filters = { ...query.filters, location: { $containsi: filters.location } };
-    }
-    if (filters.property_type?.length) {
-      query.filters = { ...query.filters, property_type: { $in: filters.property_type } };
-    }
-
-    // Apply search
-    if (search) {
-      query.filters = {
-        ...query.filters,
-        $or: [
-          { body_md: { $containsi: search } },
-          { location: { $containsi: search } },
-          { deal_size: { $containsi: search } }
-        ]
       };
+
+      const posts = await postService.findMany(feedQuery);
+
+      // Calculate relevance scores and sort
+      const scoredPosts = await Promise.all(
+        posts.map(async (post: any) => {
+          const relevanceScore = await this.calculateRelevanceScore(post, userId, preferences);
+          return { ...post, relevanceScore };
+        })
+      );
+
+      // Sort by relevance score
+      scoredPosts.sort((a: any, b: any) => b.relevanceScore - a.relevanceScore);
+
+      return {
+        data: scoredPosts,
+        meta: {
+          page,
+          pageSize: limit,
+          total: scoredPosts.length
+        }
+      };
+    } catch (error) {
+      console.error('Error generating personalized feed:', error);
+      throw error;
     }
-
-    // Apply sorting
-    switch (sort_by) {
-      case 'popular':
-        query.sort = { engagement_score: 'desc' };
-        break;
-      case 'trending':
-        query.filters = { ...query.filters, is_trending: true };
-        query.sort = { engagement_score: 'desc' };
-        break;
-      case 'engagement':
-        query.sort = { engagement_score: 'desc' };
-        break;
-      default:
-        query.sort = { createdAt: 'desc' };
-    }
-
-    // Apply category-specific logic
-    switch (category) {
-      case 'following':
-        // Get user's connections and show their posts
-        const userConnections = await this.getUserConnections(user_id);
-        query.filters = { ...query.filters, author: { $in: userConnections } };
-        break;
-      case 'trending':
-        query.filters = { ...query.filters, is_trending: true };
-        break;
-      case 'saved':
-        // Get user's saved posts
-        const savedPosts = await this.getUserSavedPosts(user_id);
-        query.filters = { ...query.filters, id: { $in: savedPosts } };
-        break;
-      case 'discover':
-        // Get personalized recommendations
-        query.filters = { ...query.filters, is_featured: true };
-        break;
-    }
-
-    const posts = await strapi.entityService.findMany('api::post.post', query);
-    const total = await strapi.entityService.count('api::post.post', { filters: query.filters });
-
-    // Get recommendations
-    const recommendations = await this.getRecommendations(user_id);
-
-    return {
-      posts,
-      pagination: {
-        page,
-        limit,
-        total,
-        total_pages: Math.ceil(total / limit)
-      },
-      stats: await this.getFeedStats(),
-      recommendations
-    };
   },
 
-  async getPersonalizedFeed(userId: string, preferences: any) {
-    const userPrefs = preferences || await this.getUserPreferences(userId);
-    
-    let query: any = {
-      populate: {
-        author: { populate: ['consultant'] },
-        property: true,
-        media_urls: true,
-        tags: true,
-        reactions: { populate: ['user'] },
-        comments: { populate: ['user', 'replies'] }
-      },
-      sort: { createdAt: 'desc' },
-      pagination: { limit: 50 }
-    };
+  async generateTrendingFeed(page: number = 1, limit: number = 20) {
+    try {
+      const postService = strapi.service('api::post.post');
+      
+      const posts = await postService.findMany({
+        filters: {
+          engagement_score: { $gte: 30 }
+        },
+        populate: {
+          author: { populate: ['consultant'] },
+          property: true,
+          media_urls: true,
+          tags: true,
+          reactions: true,
+          comments: true,
+          saves: true,
+          shares: true,
+          views: true
+        },
+        sort: { engagement_score: 'desc' as any },
+        pagination: {
+          page,
+          pageSize: limit
+        }
+      });
 
-    // Apply user preferences
-    if (userPrefs?.preferred_post_types?.length) {
-      query.filters = { post_type: { $in: userPrefs.preferred_post_types } };
+      return {
+        data: posts,
+        meta: {
+          page,
+          pageSize: limit,
+          total: posts.length
+        }
+      };
+    } catch (error) {
+      console.error('Error generating trending feed:', error);
+      throw error;
     }
-    if (userPrefs?.preferred_locations?.length) {
-      query.filters = { ...query.filters, location: { $in: userPrefs.preferred_locations } };
-    }
-    if (userPrefs?.preferred_deal_sizes?.length) {
-      query.filters = { ...query.filters, deal_size: { $in: userPrefs.preferred_deal_sizes } };
-    }
-
-    return await strapi.entityService.findMany('api::post.post', query);
   },
 
-  async getTrendingFeed(limit: number = 20) {
-    return await strapi.entityService.findMany('api::post.post', {
-      filters: { is_trending: true },
-      sort: { engagement_score: 'desc' },
-      pagination: { limit },
-      populate: {
-        author: { populate: ['consultant'] },
-        property: true,
-        media_urls: true,
-        tags: true,
-        reactions: { populate: ['user'] },
-        comments: { populate: ['user', 'replies'] }
-      }
-    });
+  async generateLatestFeed(page: number = 1, limit: number = 20) {
+    try {
+      const postService = strapi.service('api::post.post');
+      
+      const posts = await postService.findMany({
+        populate: {
+          author: { populate: ['consultant'] },
+          property: true,
+          media_urls: true,
+          tags: true,
+          reactions: true,
+          comments: true,
+          saves: true,
+          shares: true,
+          views: true
+        },
+        sort: { createdAt: 'desc' as any },
+        pagination: {
+          page,
+          pageSize: limit
+        }
+      });
+
+      return {
+        data: posts,
+        meta: {
+          page,
+          pageSize: limit,
+          total: posts.length
+        }
+      };
+    } catch (error) {
+      console.error('Error generating latest feed:', error);
+      throw error;
+    }
   },
 
-  async getFollowingFeed(userId: string, limit: number = 20) {
+  async generateCategoryFeed(category: string, page: number = 1, limit: number = 20) {
+    try {
+      const postService = strapi.service('api::post.post');
+      
+      const posts = await postService.findMany({
+        filters: {
+          post_type: category
+        },
+        populate: {
+          author: { populate: ['consultant'] },
+          property: true,
+          media_urls: true,
+          tags: true,
+          reactions: true,
+          comments: true,
+          saves: true,
+          shares: true,
+          views: true
+        },
+        sort: { createdAt: 'desc' as any },
+        pagination: {
+          page,
+          pageSize: limit
+        }
+      });
+
+      return {
+        data: posts,
+        meta: {
+          page,
+          pageSize: limit,
+          total: posts.length
+        }
+      };
+    } catch (error) {
+      console.error('Error generating category feed:', error);
+      throw error;
+    }
+  },
+
+  async getUserConnections(userId: string): Promise<string[]> {
+    try {
+      const friendsService = strapi.service('api::friends.friend');
+      
+      // Get user's friends
+      const friends = await friendsService.findMany({
+        filters: {
+          $or: [
+            { user1: { id: userId } },
+            { user2: { id: userId } }
+          ]
+        }
+      });
+
+      // Extract friend IDs
+      return friends.map((friend: any) => 
+        friend.user1?.id === userId ? friend.user2?.id : friend.user1?.id
+      ).filter(Boolean);
+    } catch (error) {
+      console.error('Error getting user connections:', error);
+      return [];
+    }
+  },
+
+  async getUserSavedPosts(userId: string): Promise<string[]> {
+    try {
+      const saveService = strapi.service('api::save.save');
+      
+      const saves = await saveService.findMany({
+        filters: { user: { id: userId } },
+        populate: { post: true }
+      });
+
+      return saves.map((save: any) => save.post?.id).filter(Boolean);
+    } catch (error) {
+      console.error('Error getting user saved posts:', error);
+      return [];
+    }
+  },
+
+  async calculateRelevanceScore(post: any, userId: string, preferences: any): Promise<number> {
+    let score = 0;
+
+    // Base score from engagement
+    score += (post.engagement_score || 0) * 0.1;
+
+    // Connection bonus
     const userConnections = await this.getUserConnections(userId);
-    
-    return await strapi.entityService.findMany('api::post.post', {
-      filters: { author: { $in: userConnections } },
-      sort: { createdAt: 'desc' },
-      pagination: { limit },
-      populate: {
-        author: { populate: ['consultant'] },
-        property: true,
-        media_urls: true,
-        tags: true,
-        reactions: { populate: ['user'] },
-        comments: { populate: ['user', 'replies'] }
-      }
-    });
+    if (userConnections.includes(post.author?.id)) {
+      score += 50;
+    }
+
+    // Preference matching
+    if (preferences.preferred_post_types?.includes(post.post_type)) {
+      score += 20;
+    }
+
+    if (preferences.preferred_deal_sizes?.includes(post.deal_size)) {
+      score += 15;
+    }
+
+    if (preferences.preferred_locations?.includes(post.location)) {
+      score += 15;
+    }
+
+    if (preferences.preferred_property_types?.includes(post.property_type)) {
+      score += 15;
+    }
+
+    // Recency bonus
+    const postAge = Date.now() - new Date(post.createdAt).getTime();
+    const daysOld = postAge / (1000 * 60 * 60 * 24);
+    if (daysOld < 1) score += 30;
+    else if (daysOld < 7) score += 20;
+    else if (daysOld < 30) score += 10;
+
+    return Math.round(score);
   },
 
-  async getSavedFeed(userId: string, limit: number = 20) {
-    const savedPosts = await this.getUserSavedPosts(userId);
-    
-    return await strapi.entityService.findMany('api::post.post', {
-      filters: { id: { $in: savedPosts } },
-      sort: { createdAt: 'desc' },
-      pagination: { limit },
-      populate: {
-        author: { populate: ['consultant'] },
-        property: true,
-        media_urls: true,
-        tags: true,
-        reactions: { populate: ['user'] },
-        comments: { populate: ['user', 'replies'] }
-      }
-    });
-  },
-
-  async getDiscoverFeed(userId: string, limit: number = 20) {
-    return await strapi.entityService.findMany('api::post.post', {
-      filters: { is_featured: true },
-      sort: { discoverability_score: 'desc' },
-      pagination: { limit },
-      populate: {
-        author: { populate: ['consultant'] },
-        property: true,
-        media_urls: true,
-        tags: true,
-        reactions: { populate: ['user'] },
-        comments: { populate: ['user', 'replies'] }
-      }
-    });
-  },
-
-  async refreshFeed(userId: string) {
-    // Clear cache and regenerate feed
-    await strapi.cache.del(`feed:${userId}`);
-    return await this.getPersonalizedFeed(userId, null);
-  },
-
-  async getUserConnections(userId: string) {
-    // Get user's friends/connections
-    const friends = await strapi.entityService.findMany('api::friends.friend', {
-      filters: {
-        $or: [
-          { user1: userId },
-          { user2: userId }
-        ]
-      }
-    });
-
-    return friends.map(friend => 
-      friend.user1 === userId ? friend.user2 : friend.user1
-    );
-  },
-
-  async getUserSavedPosts(userId: string) {
-    const saves = await strapi.entityService.findMany('api::save.save', {
-      filters: { user: userId },
-      populate: ['post']
-    });
-
-    return saves.map(save => save.post.id);
-  },
-
-  async getUserPreferences(userId: string) {
-    const prefs = await strapi.entityService.findMany('api::user-preferences.user-preferences', {
-      filters: { user: userId }
-    });
-    return prefs[0] || null;
-  },
-
-  async getRecommendations(userId: string) {
-    const userPrefs = await this.getUserPreferences(userId);
-    
-    return {
-      connections: await this.getRecommendedConnections(userId, 5),
-      topics: await this.getRecommendedTopics(userId, 10),
-      deals: await this.getRecommendedDeals(userId, 5)
-    };
-  },
-
-  async getRecommendedConnections(userId: string, limit: number) {
-    // Simple recommendation based on mutual connections
-    const userConnections = await this.getUserConnections(userId);
-    const allUsers = await strapi.entityService.findMany('plugin::users-permissions.user', {
-      filters: { id: { $ne: userId } },
-      populate: ['consultant']
-    });
-
-    return allUsers
-      .filter(user => !userConnections.includes(user.id))
-      .slice(0, limit);
-  },
-
-  async getRecommendedTopics(userId: string, limit: number) {
-    const tags = await strapi.entityService.findMany('api::tag.tag', {
-      filters: { is_trending: true },
-      sort: { usage_count: 'desc' },
-      pagination: { limit }
-    });
-
-    return tags.map(tag => tag.name);
-  },
-
-  async getRecommendedDeals(userId: string, limit: number) {
-    return await strapi.entityService.findMany('api::post.post', {
-      filters: { 
-        post_type: { $in: ['NewListing', 'ProgressUpdate'] },
-        is_featured: true 
-      },
-      sort: { engagement_score: 'desc' },
-      pagination: { limit },
-      populate: {
-        author: { populate: ['consultant'] },
-        property: true
-      }
-    });
-  },
-
-  async getFeedStats() {
-    const totalPosts = await strapi.entityService.count('api::post.post');
-    const newPosts = await strapi.entityService.count('api::post.post', {
-      filters: {
-        createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }
-      }
-    });
-    const activeDeals = await strapi.entityService.count('api::post.post', {
-      filters: { post_type: { $in: ['NewListing', 'ProgressUpdate'] } }
-    });
-    const trendingTopics = await strapi.entityService.count('api::tag.tag', {
-      filters: { is_trending: true }
-    });
-
-    return {
-      total_posts: totalPosts,
-      new_posts: newPosts,
-      active_deals: activeDeals,
-      trending_topics: trendingTopics
-    };
+  async clearUserFeedCache(userId: string) {
+    try {
+      // Note: Strapi v5 might not have cache API available
+      // This is a placeholder for future cache implementation
+      console.log(`Clearing feed cache for user: ${userId}`);
+    } catch (error) {
+      console.error('Error clearing feed cache:', error);
+    }
   }
 }));

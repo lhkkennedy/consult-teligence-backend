@@ -110,13 +110,13 @@
     "user_preferences": {
       "type": "relation",
       "relation": "oneToOne",
-      "target": "api::user-preferences.user-preferences",
+      "target": "api::user-preferences.user-preference",
       "mappedBy": "user"
     },
     "feed_analytics": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::feed-analytics.feed-analytics",
+      "target": "api::feed-analytics.feed-analytics-record",
       "mappedBy": "user"
     }
   }
