@@ -69,7 +69,7 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "feed_analytics"
+      "mappedBy": "feed_analytics"
     }
   }
 }

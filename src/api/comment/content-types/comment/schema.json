@@ -41,7 +41,7 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::comment.comment",
-      "inversedBy": "replies"
+      "mappedBy": "replies"
     },
     "replies": {
       "type": "relation",
@@ -53,13 +53,13 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "comments"
+      "mappedBy": "comments"
     },
     "post": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::post.post",
-      "inversedBy": "comments"
+      "mappedBy": "comments"
     },
     "reactions": {
       "type": "relation",

@@ -31,19 +31,19 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "reactions"
+      "mappedBy": "reactions"
     },
     "post": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::post.post",
-      "inversedBy": "reactions"
+      "mappedBy": "reactions"
     },
     "comment": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::comment.comment",
-      "inversedBy": "reactions"
+      "mappedBy": "reactions"
     }
   }
 }

@@ -28,13 +28,13 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "views"
+      "mappedBy": "views"
     },
     "post": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::post.post",
-      "inversedBy": "views"
+      "mappedBy": "views"
     }
   }
 }
