@@ -36,8 +36,7 @@
       "type": "json"
     },
     "roles": {
-      "type": "string",
-      "multiple": true
+      "type": "json"
     },
     "deal_size": {
       "type": "decimal"
@@ -54,8 +53,7 @@
       "target": "api::consultant.consultant"
     },
     "tags": {
-      "type": "string",
-      "multiple": true
+      "type": "json"
     }
   }
 } 

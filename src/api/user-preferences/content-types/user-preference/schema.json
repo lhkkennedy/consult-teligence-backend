@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "user_preferences",
+  "info": {
+    "singularName": "user-preference",
+    "pluralName": "user-preferences",
+    "displayName": "User Preferences",
+    "description": "User preferences for personalized feed and notifications"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "preferred_deal_sizes": {
+      "type": "json"
+    },
+    "preferred_property_types": {
+      "type": "json"
+    },
+    "preferred_locations": {
+      "type": "json"
+    },
+    "preferred_post_types": {
+      "type": "json"
+    },
+    "notifications": {
+      "type": "json"
+    },
+    "privacy": {
+      "type": "json"
+    },
+    "algorithm": {
+      "type": "json"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "user_preferences"
+    }
+  }
+}
