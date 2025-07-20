@@ -50,8 +50,8 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.role",
-      "inversedBy": "users",
-      "configurable": false
+      "configurable": false,
+      "mappedBy": "users"
     },
     "sentFriendRequests": {
       "type": "relation",

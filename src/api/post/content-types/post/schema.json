@@ -107,7 +107,7 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "posts"
+      "mappedBy": "posts"
     },
     "property": {
       "type": "relation",
@@ -128,7 +128,7 @@
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::tag.tag",
-      "inversedBy": "posts"
+      "mappedBy": "posts"
     },
     "reactions": {
       "type": "relation",

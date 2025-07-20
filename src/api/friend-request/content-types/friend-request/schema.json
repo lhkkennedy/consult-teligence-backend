@@ -16,17 +16,21 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "sentFriendRequests"
+      "mappedBy": "sentFriendRequests"
     },
     "to": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "receivedFriendRequests"
+      "mappedBy": "receivedFriendRequests"
     },
     "status": {
       "type": "enumeration",
-      "enum": ["pending", "accepted", "rejected"],
+      "enum": [
+        "pending",
+        "accepted",
+        "rejected"
+      ],
       "default": "pending",
       "required": true
     }
