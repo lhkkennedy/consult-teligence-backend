@@ -172,16 +172,23 @@ const baseConfig = {
   }
 };
 
-// Merge environment configuration with base config
+// Get merged configuration
 function getConfig() {
-  const envConfig = getEnvironmentConfig();
-  const envOverrides = getEnvironmentOverrides();
-  
-  return {
-    ...baseConfig,
-    ...envConfig,
-    ...envOverrides
-  };
+  try {
+    const envConfig = getEnvironmentConfig();
+    const envOverrides = getEnvironmentOverrides();
+    
+    return {
+      ...baseConfig,
+      ...envConfig,
+      ...envOverrides
+    };
+  } catch (error) {
+    // Fallback to base config if environment config fails
+    console.warn('⚠️ Environment configuration failed, using base config:', error.message);
+    return baseConfig;
+  }
 }
 
-module.exports = getConfig();
+// Export the configuration function
+module.exports = getConfig;

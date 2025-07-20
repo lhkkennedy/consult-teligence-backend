@@ -2,7 +2,7 @@
 
 const { generateMockData } = require('./generate-mock-data-enhanced');
 const { setEnvironment, listEnvironments, validateEnvironment, getCurrentEnvironment } = require('./environments');
-const config = require('./mock-data-config');
+const getConfig = require('./mock-data-config');
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -110,6 +110,7 @@ function parseOptions(args) {
 
 // Apply options to config
 function applyOptions(options) {
+  const config = getConfig();
   if (options.consultants !== null) {
     config.generation.consultants = options.consultants;
   }
@@ -145,6 +146,7 @@ function setEnvironmentFromOptions(options) {
 
 // Quick generation preset
 function setQuickPreset() {
+  const config = getConfig();
   config.generation.consultants = 2;
   config.generation.properties = 3;
   config.generation.posts = 5;
@@ -157,6 +159,7 @@ function setQuickPreset() {
 
 // Full generation preset
 function setFullPreset() {
+  const config = getConfig();
   config.generation.consultants = null; // All
   config.generation.properties = null; // All
   config.generation.posts = null; // All
@@ -228,17 +231,18 @@ async function main() {
     
     // Show configuration summary
     const currentEnv = getCurrentEnvironment();
+    const currentConfig = getConfig();
     console.log('\n📋 Generation Configuration:');
     console.log(`   Environment: ${currentEnv.name}`);
-    console.log(`   API URL: ${config.api.baseUrl}`);
-    console.log(`   Consultants: ${config.generation.consultants || 'All'}`);
-    console.log(`   Properties: ${config.generation.properties || 'All'}`);
-    console.log(`   Posts: ${config.generation.posts || 'All'}`);
+    console.log(`   API URL: ${currentConfig.api.baseUrl}`);
+    console.log(`   Consultants: ${currentConfig.generation.consultants || 'All'}`);
+    console.log(`   Properties: ${currentConfig.generation.properties || 'All'}`);
+    console.log(`   Posts: ${currentConfig.generation.posts || 'All'}`);
     console.log(`   Engagement: ${!options.skipEngagement ? 'Enabled' : 'Disabled'}`);
-    console.log(`   Clear existing: ${config.cleanup.clearExisting ? 'Yes' : 'No'}`);
+    console.log(`   Clear existing: ${currentConfig.cleanup.clearExisting ? 'Yes' : 'No'}`);
     
     // Confirm before proceeding
-    if (config.cleanup.clearExisting) {
+    if (currentConfig.cleanup.clearExisting) {
       console.log('\n⚠️  WARNING: This will clear existing data before generation!');
       console.log('Press Ctrl+C to cancel or any key to continue...');
       

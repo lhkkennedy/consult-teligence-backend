@@ -5,7 +5,19 @@ const glob = require('glob');
 require('dotenv').config();
 
 // Load configuration
-const config = require('./mock-data-config');
+const getConfig = require('./mock-data-config');
+let config;
+
+// Initialize config when needed
+function getConfigInstance() {
+  if (!config) {
+    config = getConfig();
+  }
+  return config;
+}
+
+// Initialize configuration
+config = getConfigInstance();
 
 // Configuration
 const API_BASE_URL = config.api.baseUrl;
@@ -46,7 +58,8 @@ class ProgressTracker {
   }
 
   logProgress(type, message) {
-    if (config.output.showProgress) {
+    const currentConfig = getConfigInstance();
+    if (currentConfig.output.showProgress) {
       console.log(`✅ ${message} (${this.counts[type]} total)`);
     }
   }
@@ -54,6 +67,7 @@ class ProgressTracker {
   generateReport() {
     const endTime = Date.now();
     const duration = (endTime - this.startTime) / 1000;
+    const currentConfig = getConfigInstance();
     
     console.log('\n📊 Mock Data Generation Report');
     console.log('==============================');
@@ -81,36 +95,37 @@ class MockDataLoader {
       portfolioStats: []
     };
 
-    if (config.dataSources.useExistingFiles) {
-      try {
-        // Load properties
-        const propertyFiles = glob.sync(config.dataSources.paths.properties);
-        for (const file of propertyFiles) {
-          const content = await fs.readFile(file, 'utf8');
-          const properties = JSON.parse(content);
-          data.properties.push(...properties);
-        }
+    const currentConfig = getConfigInstance();
+    if (currentConfig.dataSources.useExistingFiles) {
+              try {
+          // Load properties
+          const propertyFiles = glob.sync(currentConfig.dataSources.paths.properties);
+          for (const file of propertyFiles) {
+            const content = await fs.readFile(file, 'utf8');
+            const properties = JSON.parse(content);
+            data.properties.push(...properties);
+          }
 
-        // Load timeline posts
-        const postFiles = glob.sync(config.dataSources.paths.timelinePosts);
-        for (const file of postFiles) {
-          const content = await fs.readFile(file, 'utf8');
-          const posts = JSON.parse(content);
-          data.timelinePosts.push(...posts);
-        }
+          // Load timeline posts
+          const postFiles = glob.sync(currentConfig.dataSources.paths.timelinePosts);
+          for (const file of postFiles) {
+            const content = await fs.readFile(file, 'utf8');
+            const posts = JSON.parse(content);
+            data.timelinePosts.push(...posts);
+          }
 
-        // Load portfolio stats
-        const statsFiles = glob.sync(config.dataSources.paths.portfolioStats);
-        for (const file of statsFiles) {
-          const content = await fs.readFile(file, 'utf8');
-          const stats = JSON.parse(content);
-          data.portfolioStats.push(...stats);
-        }
+          // Load portfolio stats
+          const statsFiles = glob.sync(currentConfig.dataSources.paths.portfolioStats);
+          for (const file of statsFiles) {
+            const content = await fs.readFile(file, 'utf8');
+            const stats = JSON.parse(content);
+            data.portfolioStats.push(...stats);
+          }
 
-        console.log(`📁 Loaded existing data: ${data.properties.length} properties, ${data.timelinePosts.length} posts`);
-      } catch (error) {
-        console.warn(`⚠️ Warning: Could not load existing mock data: ${error.message}`);
-      }
+          console.log(`📁 Loaded existing data: ${data.properties.length} properties, ${data.timelinePosts.length} posts`);
+        } catch (error) {
+          console.warn(`⚠️ Warning: Could not load existing mock data: ${error.message}`);
+        }
     }
 
     return data;
@@ -578,15 +593,16 @@ const enhancedMockData = {
 // Utility functions
 async function makeRequest(endpoint, method = 'GET', data = null) {
   try {
-    const config = {
+    const currentConfig = getConfigInstance();
+    const requestConfig = {
       method,
       url: `${API_BASE_URL}${endpoint}`,
       headers,
-      timeout: config.api.timeout,
+      timeout: currentConfig.api.timeout,
       ...(data && { data })
     };
     
-    const response = await axios(config);
+    const response = await axios(requestConfig);
     return response.data;
   } catch (error) {
     console.error(`❌ Error making ${method} request to ${endpoint}:`, error.response?.data || error.message);
@@ -609,7 +625,8 @@ function generateRandomDate(start = new Date(2023, 0, 1), end = new Date()) {
 
 // Data validation
 function validateData(data, type) {
-  const requiredFields = config.validation.requiredFields[type];
+  const currentConfig = getConfigInstance();
+  const requiredFields = currentConfig.validation.requiredFields[type];
   if (!requiredFields) return true;
 
   for (const field of requiredFields) {
@@ -623,13 +640,14 @@ function validateData(data, type) {
 // Main functions
 async function createConsultants(progress) {
   console.log('👥 Creating consultants...');
+  const currentConfig = getConfigInstance();
   const createdConsultants = [];
-  const consultantsToCreate = config.generation.consultants || enhancedMockData.consultants.length;
+  const consultantsToCreate = currentConfig.generation.consultants || enhancedMockData.consultants.length;
   const consultants = enhancedMockData.consultants.slice(0, consultantsToCreate);
   
   for (const consultant of consultants) {
     try {
-      if (config.validation.validateBeforeCreate) {
+      if (currentConfig.validation.validateBeforeCreate) {
         validateData(consultant, 'consultant');
       }
 
@@ -666,13 +684,14 @@ async function createConsultants(progress) {
 
 async function createProperties(progress) {
   console.log('🏢 Creating properties...');
+  const currentConfig = getConfigInstance();
   const createdProperties = [];
-  const propertiesToCreate = config.generation.properties || enhancedMockData.properties.length;
+  const propertiesToCreate = currentConfig.generation.properties || enhancedMockData.properties.length;
   const properties = enhancedMockData.properties.slice(0, propertiesToCreate);
   
   for (const property of properties) {
     try {
-      if (config.validation.validateBeforeCreate) {
+      if (currentConfig.validation.validateBeforeCreate) {
         validateData(property, 'property');
       }
 
@@ -706,19 +725,20 @@ async function createProperties(progress) {
 
 async function createPosts(consultants, properties, progress) {
   console.log('📝 Creating posts...');
+  const currentConfig = getConfigInstance();
   const createdPosts = [];
-  const postsToCreate = config.generation.posts || enhancedMockData.posts.length;
+  const postsToCreate = currentConfig.generation.posts || enhancedMockData.posts.length;
   const posts = enhancedMockData.posts.slice(0, postsToCreate);
   
   for (const post of posts) {
     try {
-      if (config.validation.validateBeforeCreate) {
+      if (currentConfig.validation.validateBeforeCreate) {
         validateData(post, 'post');
       }
 
       // Assign consultant based on configuration
       let consultant;
-      if (config.relationships.postAssignment === 'round-robin') {
+      if (currentConfig.relationships.postAssignment === 'round-robin') {
         consultant = consultants[createdPosts.length % consultants.length];
       } else {
         consultant = getRandomElement(consultants);
@@ -726,9 +746,9 @@ async function createPosts(consultants, properties, progress) {
       
       // Assign property based on configuration
       let property = null;
-      if (config.relationships.propertyAssignment === 'matching' && post.post_type === 'Property') {
+      if (currentConfig.relationships.propertyAssignment === 'matching' && post.post_type === 'Property') {
         property = getRandomElement(properties);
-      } else if (config.relationships.propertyAssignment === 'random') {
+      } else if (currentConfig.relationships.propertyAssignment === 'random') {
         property = Math.random() < 0.3 ? getRandomElement(properties) : null;
       }
       
@@ -755,13 +775,14 @@ async function createPosts(consultants, properties, progress) {
 
 async function createReactions(posts, consultants, progress) {
   console.log('👍 Creating reactions...');
+  const currentConfig = getConfigInstance();
   
   for (const post of posts) {
-    if (Math.random() > config.generation.reactions.probability) continue;
+    if (Math.random() > currentConfig.generation.reactions.probability) continue;
     
     const reactionCountForPost = Math.floor(Math.random() * 
-      (config.generation.reactions.maxPerPost - config.generation.reactions.minPerPost + 1)) + 
-      config.generation.reactions.minPerPost;
+      (currentConfig.generation.reactions.maxPerPost - currentConfig.generation.reactions.minPerPost + 1)) + 
+      currentConfig.generation.reactions.minPerPost;
     
     for (let i = 0; i < reactionCountForPost; i++) {
       try {
@@ -790,13 +811,14 @@ async function createReactions(posts, consultants, progress) {
 
 async function createComments(posts, consultants, progress) {
   console.log('💬 Creating comments...');
+  const currentConfig = getConfigInstance();
   
   for (const post of posts) {
-    if (Math.random() > config.generation.comments.probability) continue;
+    if (Math.random() > currentConfig.generation.comments.probability) continue;
     
     const commentCountForPost = Math.floor(Math.random() * 
-      (config.generation.comments.maxPerPost - config.generation.comments.minPerPost + 1)) + 
-      config.generation.comments.minPerPost;
+      (currentConfig.generation.comments.maxPerPost - currentConfig.generation.comments.minPerPost + 1)) + 
+      currentConfig.generation.comments.minPerPost;
     
     for (let i = 0; i < commentCountForPost; i++) {
       try {
@@ -825,10 +847,11 @@ async function createComments(posts, consultants, progress) {
 
 async function createSaves(posts, consultants, progress) {
   console.log('🔖 Creating saves...');
+  const currentConfig = getConfigInstance();
   
   for (const post of posts) {
     for (const consultant of consultants) {
-      if (Math.random() < config.generation.saves.probability) {
+      if (Math.random() < currentConfig.generation.saves.probability) {
         try {
           await makeRequest('/saves', 'POST', {
             data: {
@@ -852,18 +875,19 @@ async function createSaves(posts, consultants, progress) {
 
 async function createViews(posts, consultants, progress) {
   console.log('👁️ Creating views...');
+  const currentConfig = getConfigInstance();
   
   for (const post of posts) {
     for (const consultant of consultants) {
-      if (Math.random() < config.generation.views.probability) {
+      if (Math.random() < currentConfig.generation.views.probability) {
         try {
           await makeRequest('/views', 'POST', {
             data: {
               post: post.id,
               consultant: consultant.id,
               view_duration: Math.floor(Math.random() * 
-                (config.generation.views.maxDuration - config.generation.views.minDuration + 1)) + 
-                config.generation.views.minDuration,
+                (currentConfig.generation.views.maxDuration - currentConfig.generation.views.minDuration + 1)) + 
+                currentConfig.generation.views.minDuration,
               completion_rate: Math.random() * 100,
               source: getRandomElement(['feed', 'search', 'profile'])
             }
@@ -911,7 +935,8 @@ async function generateMockData() {
     await createViews(posts, consultants, progress);
     
     // Generate report
-    if (config.output.generateReport) {
+    const currentConfig = getConfigInstance();
+    if (currentConfig.output.generateReport) {
       progress.generateReport();
     }
     
