@@ -1,11 +1,33 @@
 #!/usr/bin/env node
 
 const { generateMockData } = require('./generate-mock-data-enhanced');
+const { setEnvironment, listEnvironments, validateEnvironment, getCurrentEnvironment } = require('./environments');
 const config = require('./mock-data-config');
 
 // Parse command line arguments
 const args = process.argv.slice(2);
 const command = args[0];
+
+// Show available environments
+function showEnvironments() {
+  console.log('\n🌍 Available Environments:');
+  console.log('==========================');
+  
+  const envs = listEnvironments();
+  envs.forEach(env => {
+    const tokenStatus = env.token ? '✅' : '❌';
+    const currentIndicator = env.key === getCurrentEnvironment().key ? ' (current)' : '';
+    
+    console.log(`\n${env.key}${currentIndicator}:`);
+    console.log(`   Name: ${env.name}`);
+    console.log(`   URL: ${env.url}`);
+    console.log(`   Token: ${tokenStatus}`);
+    console.log(`   Description: ${env.description}`);
+  });
+  
+  console.log('\n💡 To switch environments, use: --env=ENVIRONMENT');
+  console.log('   Example: --env=render, --env=local, --env=staging');
+}
 
 // Help function
 function showHelp() {
@@ -18,6 +40,7 @@ Commands:
   generate, g     Generate all mock data (default)
   quick, q        Generate minimal data for quick testing
   full, f         Generate comprehensive data set
+  env, e          List available environments
   help, h         Show this help message
 
 Options:
@@ -27,6 +50,7 @@ Options:
   --no-engagement    Skip creating reactions, comments, saves, and views
   --clear            Clear existing data before generation
   --config=FILE      Use custom config file
+  --env=ENV          Set environment (local, render, staging)
 
 Examples:
   node scripts/seed-database.js                    # Generate all data
@@ -34,10 +58,15 @@ Examples:
   node scripts/seed-database.js --consultants=3    # Only 3 consultants
   node scripts/seed-database.js --no-engagement    # Skip engagement data
   node scripts/seed-database.js --clear            # Clear and regenerate
+  node scripts/seed-database.js --env=render       # Use Render environment
+  node scripts/seed-database.js --env=local        # Use local environment
 
 Environment Variables:
-  STRAPI_URL         Strapi API URL (default: http://localhost:1337/api)
-  STRAPI_TOKEN       Strapi API token (required)
+  STRAPI_TOKEN_LOCAL  API token for local environment
+  STRAPI_TOKEN_RENDER API token for Render environment
+  STRAPI_TOKEN_STAGING API token for staging environment
+  STRAPI_TOKEN        Fallback API token (used if specific env token not set)
+  STRAPI_URL          Override API URL (optional)
 
 Configuration:
   Edit scripts/mock-data-config.js to customize generation settings
@@ -52,7 +81,8 @@ function parseOptions(args) {
     posts: null,
     skipEngagement: false,
     clearExisting: false,
-    configFile: null
+    configFile: null,
+    environment: null
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -70,6 +100,8 @@ function parseOptions(args) {
       options.clearExisting = true;
     } else if (arg.startsWith('--config=')) {
       options.configFile = arg.split('=')[1];
+    } else if (arg.startsWith('--env=')) {
+      options.environment = arg.split('=')[1];
     }
   }
 
@@ -95,6 +127,19 @@ function applyOptions(options) {
   }
   if (options.clearExisting) {
     config.cleanup.clearExisting = true;
+  }
+}
+
+// Set environment
+function setEnvironmentFromOptions(options) {
+  if (options.environment) {
+    try {
+      setEnvironment(options.environment);
+      console.log(`🌍 Switched to environment: ${getCurrentEnvironment().name}`);
+    } catch (error) {
+      console.error(`❌ Failed to set environment: ${error.message}`);
+      process.exit(1);
+    }
   }
 }
 
@@ -136,6 +181,11 @@ async function main() {
         showHelp();
         return;
         
+      case 'env':
+      case 'e':
+        showEnvironments();
+        return;
+        
       case 'quick':
       case 'q':
         setQuickPreset();
@@ -160,19 +210,26 @@ async function main() {
         process.exit(1);
     }
     
+    // Set environment from options
+    setEnvironmentFromOptions(options);
+    
     // Apply options
     applyOptions(options);
     
-    // Validate configuration
-    if (!config.api.token) {
-      console.error('❌ STRAPI_TOKEN environment variable is required');
-      console.log('Please set your Strapi API token:');
-      console.log('export STRAPI_TOKEN="your-token-here"');
+    // Validate environment
+    try {
+      validateEnvironment();
+    } catch (error) {
+      console.error(`❌ Environment validation failed: ${error.message}`);
+      console.log('\n💡 Available environments:');
+      showEnvironments();
       process.exit(1);
     }
     
     // Show configuration summary
+    const currentEnv = getCurrentEnvironment();
     console.log('\n📋 Generation Configuration:');
+    console.log(`   Environment: ${currentEnv.name}`);
     console.log(`   API URL: ${config.api.baseUrl}`);
     console.log(`   Consultants: ${config.generation.consultants || 'All'}`);
     console.log(`   Properties: ${config.generation.properties || 'All'}`);

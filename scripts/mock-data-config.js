@@ -1,6 +1,9 @@
 // Configuration for mock data generation
-module.exports = {
-  // API Configuration
+const { getEnvironmentConfig, getEnvironmentOverrides } = require('./environments');
+
+// Base configuration
+const baseConfig = {
+  // API Configuration (will be overridden by environment)
   api: {
     baseUrl: process.env.STRAPI_URL || 'http://localhost:1337/api',
     token: process.env.STRAPI_TOKEN,
@@ -168,3 +171,17 @@ module.exports = {
     backupBeforeClear: true
   }
 };
+
+// Merge environment configuration with base config
+function getConfig() {
+  const envConfig = getEnvironmentConfig();
+  const envOverrides = getEnvironmentOverrides();
+  
+  return {
+    ...baseConfig,
+    ...envConfig,
+    ...envOverrides
+  };
+}
+
+module.exports = getConfig();
