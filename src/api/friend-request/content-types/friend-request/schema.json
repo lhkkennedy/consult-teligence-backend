@@ -16,13 +16,13 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "mappedBy": "sentFriendRequests"
+      "inversedBy": "sentFriendRequests"
     },
     "to": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "mappedBy": "receivedFriendRequests"
+      "inversedBy": "receivedFriendRequests"
     },
     "status": {
       "type": "enumeration",

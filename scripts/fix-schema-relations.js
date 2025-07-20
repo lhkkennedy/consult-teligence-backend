@@ -58,11 +58,17 @@ function fixSchemaRelations() {
           const attr = schema.attributes[attrName];
           
           if (attr.type === 'relation' && attr.inversedBy) {
-            // For all relations, change inversedBy to mappedBy
-            attr.mappedBy = attr.inversedBy;
-            delete attr.inversedBy;
-            modified = true;
-            console.log(`Fixed ${attrName} in ${schemaPath}`);
+            // For manyToMany relations, change inversedBy to mappedBy
+            // For manyToOne relations, keep inversedBy
+            if (attr.relation === 'manyToMany') {
+              attr.mappedBy = attr.inversedBy;
+              delete attr.inversedBy;
+              modified = true;
+              console.log(`Fixed ${attrName} in ${schemaPath} (manyToMany)`);
+            } else if (attr.relation === 'manyToOne') {
+              // Keep inversedBy for manyToOne relations
+              console.log(`Keeping inversedBy for ${attrName} in ${schemaPath} (manyToOne)`);
+            }
           }
         });
       }

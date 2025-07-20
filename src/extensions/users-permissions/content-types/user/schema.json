@@ -46,13 +46,7 @@
       "type": "boolean",
       "default": false
     },
-    "role": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "plugin::users-permissions.role",
-      "configurable": false,
-      "mappedBy": "users"
-    },
+
     "sentFriendRequests": {
       "type": "relation",
       "relation": "oneToMany",

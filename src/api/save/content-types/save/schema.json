@@ -23,13 +23,13 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "mappedBy": "saves"
+      "inversedBy": "saves"
     },
     "post": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::post.post",
-      "mappedBy": "saves"
+      "inversedBy": "saves"
     }
   }
 }

@@ -36,7 +36,7 @@
       "type": "json"
     },
     "roles": {
-      "type": "jsonb"
+      "type": "json"
     },
     "deal_size": {
       "type": "decimal"
