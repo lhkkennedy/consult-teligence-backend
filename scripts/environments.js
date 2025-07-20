@@ -10,7 +10,7 @@ const environments = {
     name: 'Local Development',
     url: 'http://localhost:1337/api',
     description: 'Local Strapi instance running on localhost:1337',
-    token: process.env.STRAPI_TOKEN_LOCAL || process.env.STRAPI_TOKEN,
+    token: process.env.STRAPI_TOKEN_LOCAL || process.env.TOKEN || process.env.STRAPI_TOKEN,
     timeout: 30000,
     features: {
       clearData: true,

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * Environment Setup Script
+ * Environment Setup Script for ConsultTeligence
  * 
- * This script helps you configure environment variables for different
- * environments (localhost, Render, staging).
+ * This script helps users configure their environment variables for different
+ * Strapi environments (local, staging, production).
  */
 
 const fs = require('fs');
@@ -16,50 +16,111 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
-// Environment configuration template
-const envTemplate = `# ConsultTeligence Mock Data Generation Environment Variables
+// Environment configurations
+const environments = {
+  local: {
+    name: 'Local Development',
+    url: 'http://localhost:1337/api',
+    description: 'Local Strapi instance running on localhost:1337',
+    tokenVar: 'STRAPI_TOKEN_LOCAL'
+  },
+  
+  render: {
+    name: 'Render Production',
+    url: 'https://consult-teligence-backend.onrender.com/api',
+    description: 'Hosted Strapi instance on Render',
+    tokenVar: 'STRAPI_TOKEN_RENDER'
+  },
+  
+  staging: {
+    name: 'Staging Environment',
+    url: 'https://your-staging-url.com/api',
+    description: 'Staging environment for testing',
+    tokenVar: 'STRAPI_TOKEN_STAGING'
+  }
+};
 
-# Local Development (localhost:1337)
+// Example .env content
+const envExample = `# Strapi API Configuration
+# Copy this file to .env and fill in your actual values
+
+# Local Development Environment
 STRAPI_TOKEN_LOCAL=your_local_token_here
 
-# Render Production (https://consult-teligence-backend.onrender.com)
+# Render Production Environment  
 STRAPI_TOKEN_RENDER=your_render_token_here
 
-# Staging Environment (optional)
+# Staging Environment
 STRAPI_TOKEN_STAGING=your_staging_token_here
 
-# Fallback token (used if specific environment token is not set)
+# Fallback token (used if specific environment token not set)
 STRAPI_TOKEN=your_fallback_token_here
 
 # Optional: Override API URL
-# STRAPI_URL=https://custom-url.com/api
+# STRAPI_URL=http://localhost:1337/api
+
+# To get your API token:
+# 1. Go to your Strapi admin panel
+# 2. Navigate to Settings > API Tokens
+# 3. Create a new token with appropriate permissions
+# 4. Copy the token and paste it above
 `;
 
-// Instructions for getting tokens
-const tokenInstructions = {
-  local: {
-    title: 'Local Development Token',
-    steps: [
-      '1. Start your local Strapi application: npm run develop',
-      '2. Go to http://localhost:1337/admin',
-      '3. Log in to your admin panel',
-      '4. Go to Settings > API Tokens',
-      '5. Create a new token with "Full access" permissions',
-      '6. Copy the generated token'
-    ]
-  },
-  render: {
-    title: 'Render Production Token',
-    steps: [
-      '1. Go to https://consult-teligence-backend.onrender.com/admin',
-      '2. Log in to your admin panel',
-      '3. Go to Settings > API Tokens',
-      '4. Create a new token with "Full access" permissions',
-      '5. Copy the generated token',
-      '6. Note: Be careful with production tokens!'
-    ]
+function showHelp() {
+  console.log(`
+🚀 ConsultTeligence Environment Setup
+
+This script helps you configure your environment variables for different Strapi environments.
+
+Available commands:
+  setup     - Interactive setup for environment variables
+  create    - Create .env file with template
+  list      - List available environments
+  help      - Show this help message
+
+Examples:
+  node scripts/setup-environments.js setup
+  node scripts/setup-environments.js create
+  node scripts/setup-environments.js list
+`);
+}
+
+function listEnvironments() {
+  console.log('\n🌍 Available Environments:');
+  console.log('==========================');
+  
+  Object.entries(environments).forEach(([key, env]) => {
+    console.log(`\n${key}:`);
+    console.log(`   Name: ${env.name}`);
+    console.log(`   URL: ${env.url}`);
+    console.log(`   Description: ${env.description}`);
+    console.log(`   Token Variable: ${env.tokenVar}`);
+  });
+  
+  console.log('\n💡 To use an environment, set the corresponding token variable:');
+  console.log('   export STRAPI_TOKEN_LOCAL="your_token_here"');
+  console.log('   export STRAPI_TOKEN_RENDER="your_token_here"');
+  console.log('   export STRAPI_TOKEN_STAGING="your_token_here"');
+}
+
+function createEnvFile() {
+  const envPath = path.join(__dirname, '..', '.env');
+  
+  if (fs.existsSync(envPath)) {
+    console.log('⚠️  .env file already exists. Skipping creation.');
+    console.log('   If you want to recreate it, delete the existing file first.');
+    return;
   }
-};
+  
+  try {
+    fs.writeFileSync(envPath, envExample);
+    console.log('✅ Created .env file with template');
+    console.log('📝 Edit the file and add your actual API tokens');
+    console.log(`📁 File location: ${envPath}`);
+  } catch (error) {
+    console.error('❌ Failed to create .env file:', error.message);
+  }
+}
 
 function question(prompt) {
   return new Promise((resolve) => {
@@ -67,120 +128,108 @@ function question(prompt) {
   });
 }
 
-function showInstructions(env) {
-  const instructions = tokenInstructions[env];
-  if (!instructions) return;
+async function interactiveSetup() {
+  console.log('\n🔧 Interactive Environment Setup');
+  console.log('================================');
+  console.log('\nThis will help you configure your environment variables.');
+  console.log('You can skip any environment by pressing Enter without entering a token.\n');
   
-  console.log(`\n📋 ${instructions.title}:`);
-  console.log('='.repeat(instructions.title.length + 2));
-  instructions.steps.forEach(step => {
-    console.log(`   ${step}`);
-  });
-  console.log('');
-}
-
-async function setupEnvironment() {
-  console.log('🚀 ConsultTeligence Environment Setup');
-  console.log('=====================================\n');
+  const tokens = {};
   
-  console.log('This script will help you configure environment variables for mock data generation.');
-  console.log('You can set up tokens for different environments (local, Render, staging).\n');
-  
-  // Check if .env file exists
-  const envPath = path.join(process.cwd(), '.env');
-  const envExists = fs.existsSync(envPath);
-  
-  if (envExists) {
-    console.log('📁 Found existing .env file');
-    const overwrite = await question('Do you want to overwrite it? (y/N): ');
-    if (overwrite.toLowerCase() !== 'y' && overwrite.toLowerCase() !== 'yes') {
-      console.log('Setup cancelled.');
-      rl.close();
-      return;
+  for (const [key, env] of Object.entries(environments)) {
+    console.log(`\n${env.name} (${env.url})`);
+    console.log(`Description: ${env.description}`);
+    
+    const token = await question(`Enter your API token for ${key} (or press Enter to skip): `);
+    
+    if (token.trim()) {
+      tokens[env.tokenVar] = token.trim();
+      console.log(`✅ Token saved for ${key}`);
+    } else {
+      console.log(`⏭️  Skipped ${key}`);
     }
   }
   
-  console.log('\n🌍 Environment Configuration');
-  console.log('============================\n');
-  
-  let envContent = envTemplate;
-  
-  // Local environment
-  console.log('1️⃣  Local Development (localhost:1337)');
-  showInstructions('local');
-  const localToken = await question('Enter your local development token (or press Enter to skip): ');
-  if (localToken.trim()) {
-    envContent = envContent.replace('your_local_token_here', localToken.trim());
-  }
-  
-  // Render environment
-  console.log('\n2️⃣  Render Production');
-  showInstructions('render');
-  const renderToken = await question('Enter your Render production token (or press Enter to skip): ');
-  if (renderToken.trim()) {
-    envContent = envContent.replace('your_render_token_here', renderToken.trim());
-  }
-  
-  // Staging environment
-  console.log('\n3️⃣  Staging Environment (optional)');
-  const stagingToken = await question('Enter your staging token (or press Enter to skip): ');
-  if (stagingToken.trim()) {
-    envContent = envContent.replace('your_staging_token_here', stagingToken.trim());
-  }
-  
-  // Fallback token
-  console.log('\n4️⃣  Fallback Token');
+  // Ask for fallback token
+  console.log('\nFallback Token');
   console.log('This token will be used if a specific environment token is not set.');
-  const fallbackToken = await question('Enter your fallback token (or press Enter to skip): ');
+  const fallbackToken = await question('Enter fallback API token (or press Enter to skip): ');
+  
   if (fallbackToken.trim()) {
-    envContent = envContent.replace('your_fallback_token_here', fallbackToken.trim());
+    tokens.STRAPI_TOKEN = fallbackToken.trim();
+    console.log('✅ Fallback token saved');
   }
   
-  // Write .env file
+  // Generate .env content
+  let envContent = '# Strapi API Configuration\n';
+  envContent += '# Generated by setup script\n\n';
+  
+  Object.entries(tokens).forEach(([key, value]) => {
+    envContent += `${key}=${value}\n`;
+  });
+  
+  // Save to .env file
+  const envPath = path.join(__dirname, '..', '.env');
+  
   try {
     fs.writeFileSync(envPath, envContent);
-    console.log('\n✅ Environment configuration saved to .env file');
+    console.log('\n✅ Environment variables saved to .env file');
+    console.log(`📁 File location: ${envPath}`);
+    
+    console.log('\n📋 Summary of configured environments:');
+    Object.entries(tokens).forEach(([key, value]) => {
+      const maskedValue = value.substring(0, 8) + '...' + value.substring(value.length - 4);
+      console.log(`   ${key}=${maskedValue}`);
+    });
+    
   } catch (error) {
-    console.error('\n❌ Failed to write .env file:', error.message);
-    rl.close();
-    return;
+    console.error('❌ Failed to save .env file:', error.message);
   }
-  
-  // Show next steps
-  console.log('\n📋 Next Steps:');
-  console.log('==============');
-  console.log('1. Load the environment variables:');
-  console.log('   source .env');
-  console.log('   # or');
-  console.log('   export $(cat .env | xargs)');
-  console.log('');
-  console.log('2. Test your configuration:');
-  console.log('   node scripts/seed-database.js env');
-  console.log('');
-  console.log('3. Generate mock data:');
-  console.log('   # For local development');
-  console.log('   node scripts/seed-database.js --env=local');
-  console.log('');
-  console.log('   # For Render production');
-  console.log('   node scripts/seed-database.js --env=render');
-  console.log('');
-  console.log('4. Or use npm scripts:');
-  console.log('   npm run seed:quick -- --env=local');
-  console.log('   npm run seed:full -- --env=render');
   
   rl.close();
 }
 
-// Run setup
+// Main execution
+async function main() {
+  const command = process.argv[2];
+  
+  switch (command) {
+    case 'setup':
+      await interactiveSetup();
+      break;
+      
+    case 'create':
+      createEnvFile();
+      break;
+      
+    case 'list':
+      listEnvironments();
+      break;
+      
+    case 'help':
+    case undefined:
+      showHelp();
+      break;
+      
+    default:
+      console.error(`❌ Unknown command: ${command}`);
+      showHelp();
+      process.exit(1);
+  }
+}
+
+// Run the script
 if (require.main === module) {
-  setupEnvironment().catch(error => {
-    console.error('Setup failed:', error.message);
-    rl.close();
+  main().catch(error => {
+    console.error('❌ Setup failed:', error.message);
     process.exit(1);
   });
 }
 
 module.exports = {
-  setupEnvironment,
-  tokenInstructions
+  environments,
+  showHelp,
+  listEnvironments,
+  createEnvFile,
+  interactiveSetup
 };

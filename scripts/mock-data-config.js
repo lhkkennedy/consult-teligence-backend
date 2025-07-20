@@ -153,7 +153,7 @@ const baseConfig = {
     
     // Required fields validation
     requiredFields: {
-      consultant: ['firstName', 'lastName', 'email'],
+      consultant: ['firstName', 'lastName', 'location', 'company'],
       property: ['title', 'address', 'property_type'],
       post: ['body_md', 'post_type', 'sentiment']
     }
