@@ -112,6 +112,12 @@
       "relation": "oneToMany",
       "target": "api::feed-analytics.feed-analytics-record",
       "mappedBy": "user"
+    },
+    "role": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.role",
+      "inversedBy": "users"
     }
   }
 }

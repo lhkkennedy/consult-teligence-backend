@@ -25,7 +25,9 @@
     "seed:render:full": "node scripts/seed-database.js full --env=render",
     "test:roles": "node scripts/test-roles-endpoint.js",
     "test:fix": "node scripts/test-fix.js",
-    "setup:env": "node scripts/setup-env.js"
+    "setup:env": "node scripts/setup-env.js",
+    "setup:permissions": "node scripts/setup-permissions.js",
+    "delete-duplicate-role": "node scripts/delete-duplicate-role.js"
   },
   "dependencies": {
     "@strapi/plugin-cloud": "5.15.0",
