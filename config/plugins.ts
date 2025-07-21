@@ -13,6 +13,11 @@ export default () => ({ env }: { env: any }) => ({
       database: {
         client: env('DATABASE_CLIENT', 'sqlite'),
       },
+      // Add query configuration to prevent operator issues
+      query: {
+        defaultLimit: 25,
+        maxLimit: 100,
+      },
     },
   },
   upload: {

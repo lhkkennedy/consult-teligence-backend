@@ -3,40 +3,14 @@ import { factories } from '@strapi/strapi';
 export default factories.createCoreController('plugin::users-permissions.role', ({ strapi }) => ({
   async find(ctx) {
     try {
-      // Use the Document Service API to fetch roles with proper population
-      const roles = await strapi.db.query('plugin::users-permissions.role').findMany({
-        populate: {
-          permissions: {
-            fields: ['id', 'action', 'subject']
-          },
-          users: {
-            fields: ['id', 'username', 'email']
-          }
-        },
-        orderBy: { name: 'asc' }
-      });
-
-      // Transform the data to match the expected API response format
-      const transformedRoles = roles.map(role => ({
-        id: role.id,
-        name: role.name,
-        description: role.description,
-        type: role.type,
-        permissions: role.permissions || [],
-        users: role.users || [],
-        createdAt: role.createdAt,
-        updatedAt: role.updatedAt
-      }));
-
+      // Use the custom service to handle the query safely
+      const result = await strapi.service('plugin::users-permissions.role').find(ctx.query);
+      
+      // Transform the response to match the expected API format
       return {
-        data: transformedRoles,
+        data: result.results,
         meta: {
-          pagination: {
-            page: 1,
-            pageSize: transformedRoles.length,
-            pageCount: 1,
-            total: transformedRoles.length
-          }
+          pagination: result.pagination
         }
       };
     } catch (error) {
@@ -50,40 +24,15 @@ export default factories.createCoreController('plugin::users-permissions.role', 
     try {
       const { id } = ctx.params;
 
-      // Handle both numeric and string IDs properly
-      const whereCondition = isNaN(Number(id)) ? { documentId: id } : { id: Number(id) };
-
-      // Use the Document Service API with proper error handling
-      const role = await strapi.db.query('plugin::users-permissions.role').findOne({
-        where: whereCondition,
-        populate: {
-          permissions: {
-            fields: ['id', 'action', 'subject']
-          },
-          users: {
-            fields: ['id', 'username', 'email']
-          }
-        }
-      });
+      // Use the custom service to handle the query safely
+      const role = await strapi.service('plugin::users-permissions.role').findOne(id, ctx.query);
 
       if (!role) {
         return ctx.notFound('Role not found');
       }
 
-      // Transform the data to match the expected API response format
-      const transformedRole = {
-        id: role.id,
-        name: role.name,
-        description: role.description,
-        type: role.type,
-        permissions: role.permissions || [],
-        users: role.users || [],
-        createdAt: role.createdAt,
-        updatedAt: role.updatedAt
-      };
-
       return {
-        data: transformedRole
+        data: role
       };
     } catch (error) {
       strapi.log.error('Error in roles controller findOne:', error);
@@ -96,15 +45,8 @@ export default factories.createCoreController('plugin::users-permissions.role', 
     try {
       const { data } = ctx.request.body;
 
-      // Use the Document Service API to create the role
-      const role = await strapi.db.query('plugin::users-permissions.role').create({
-        data: {
-          name: data.name,
-          description: data.description,
-          type: data.type || 'authenticated',
-          permissions: data.permissions || []
-        }
-      });
+      // Use the custom service to create the role
+      const role = await strapi.service('plugin::users-permissions.role').create(data);
 
       return {
         data: role
@@ -121,19 +63,8 @@ export default factories.createCoreController('plugin::users-permissions.role', 
       const { id } = ctx.params;
       const { data } = ctx.request.body;
 
-      // Handle both numeric and string IDs properly
-      const whereCondition = isNaN(Number(id)) ? { documentId: id } : { id: Number(id) };
-
-      // Use the Document Service API to update the role
-      const role = await strapi.db.query('plugin::users-permissions.role').update({
-        where: whereCondition,
-        data: {
-          name: data.name,
-          description: data.description,
-          type: data.type,
-          permissions: data.permissions || []
-        }
-      });
+      // Use the custom service to update the role
+      const role = await strapi.service('plugin::users-permissions.role').update(id, data);
 
       if (!role) {
         return ctx.notFound('Role not found');
@@ -153,13 +84,8 @@ export default factories.createCoreController('plugin::users-permissions.role', 
     try {
       const { id } = ctx.params;
 
-      // Handle both numeric and string IDs properly
-      const whereCondition = isNaN(Number(id)) ? { documentId: id } : { id: Number(id) };
-
-      // Use the Document Service API to delete the role
-      const role = await strapi.db.query('plugin::users-permissions.role').delete({
-        where: whereCondition
-      });
+      // Use the custom service to delete the role
+      const role = await strapi.service('plugin::users-permissions.role').delete(id);
 
       if (!role) {
         return ctx.notFound('Role not found');
