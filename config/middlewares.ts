@@ -5,7 +5,6 @@ export default [
   {
     name: 'strapi::cors',
     config: {
-      enabled: true,
       origin: [
         'https://consult-teligence-frontend.vercel.app',
         'http://localhost:5173',

@@ -75,6 +75,12 @@ export default ({ env }: { env: any }) => {
         ),
       },
       debug: env.bool('DATABASE_DEBUG', false),
+      // Add additional configuration for better error handling
+      asyncStackTraces: true,
+      // Ensure proper handling of users-permissions plugin
+      migrations: {
+        directory: env('DATABASE_MIGRATIONS_DIR', './database/migrations'),
+      },
     },
   };
 };

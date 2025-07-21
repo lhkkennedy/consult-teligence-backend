@@ -1502,10 +1502,6 @@ export interface PluginUsersPermissionsUser
       'api::friend-request.friend-request'
     >;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
-    role: Schema.Attribute.Relation<
-      'manyToOne',
-      'plugin::users-permissions.role'
-    >;
     saves: Schema.Attribute.Relation<'oneToMany', 'api::save.save'>;
     sentFriendRequests: Schema.Attribute.Relation<
       'oneToMany',

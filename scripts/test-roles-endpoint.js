@@ -13,6 +13,8 @@ async function testRolesEndpoint() {
       headers.Authorization = `Bearer ${token}`;
     }
 
+    // Test the roles endpoint
+    console.log('\n1. Testing GET /users-permissions/roles');
     const response = await fetch(`${baseUrl}/users-permissions/roles`, {
       method: 'GET',
       headers: {
@@ -31,6 +33,28 @@ async function testRolesEndpoint() {
       const errorText = await response.text();
       console.error('Error response:', errorText);
     }
+
+    // Test the admin roles endpoint
+    console.log('\n2. Testing GET /admin/roles');
+    const adminResponse = await fetch(`${baseUrl}/admin/roles`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers
+      }
+    });
+
+    console.log('Admin Response status:', adminResponse.status);
+    console.log('Admin Response headers:', Object.fromEntries(adminResponse.headers.entries()));
+
+    if (adminResponse.ok) {
+      const adminData = await adminResponse.json();
+      console.log('Admin Response data:', JSON.stringify(adminData, null, 2));
+    } else {
+      const adminErrorText = await adminResponse.text();
+      console.error('Admin Error response:', adminErrorText);
+    }
+
   } catch (error) {
     console.error('Request failed:', error.message);
   }
