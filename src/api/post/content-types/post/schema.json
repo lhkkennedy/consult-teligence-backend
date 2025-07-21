@@ -106,8 +106,7 @@
     "author": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "posts"
+      "target": "plugin::users-permissions.user"
     },
     "property": {
       "type": "relation",

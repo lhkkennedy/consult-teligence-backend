@@ -1463,13 +1463,8 @@ export interface PluginUsersPermissionsUser
   };
   attributes: {
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
-    comments: Schema.Attribute.Relation<'oneToMany', 'api::comment.comment'>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
-    consultant: Schema.Attribute.Relation<
-      'oneToOne',
-      'api::consultant.consultant'
-    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1478,10 +1473,6 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
-    feed_analytics: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::feed-analytics.feed-analytics-record'
-    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1493,34 +1484,17 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
-    posts: Schema.Attribute.Relation<'oneToMany', 'api::post.post'>;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
-    reactions: Schema.Attribute.Relation<'oneToMany', 'api::reaction.reaction'>;
-    receivedFriendRequests: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::friend-request.friend-request'
-    >;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
-    saves: Schema.Attribute.Relation<'oneToMany', 'api::save.save'>;
-    sentFriendRequests: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::friend-request.friend-request'
-    >;
-    shares: Schema.Attribute.Relation<'oneToMany', 'api::share.share'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    user_preferences: Schema.Attribute.Relation<
-      'oneToOne',
-      'api::user-preferences.user-preference'
-    >;
     username: Schema.Attribute.String &
       Schema.Attribute.Unique &
       Schema.Attribute.SetMinMaxLength<{
         minLength: 3;
       }>;
-    views: Schema.Attribute.Relation<'oneToMany', 'api::view.view'>;
   };
 }
 
