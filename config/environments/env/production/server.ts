@@ -9,4 +9,5 @@ export default ({ env }: { env: any }) => ({
   webhooks: {
     populateRelations: env.bool('WEBHOOKS_POPULATE_RELATIONS', false),
   },
+  url: env('PUBLIC_URL', 'https://consult-teligence-backend.onrender.com'),
 });

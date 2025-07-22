@@ -6,7 +6,7 @@ export default () => ({ env }: { env: any }) => ({
       },
       // Add additional configuration to prevent query issues
       advanced: {
-        allowlist: ['localhost', '127.0.0.1'],
+        allowlist: ['localhost', '127.0.0.1', 'https://consult-teligence-frontend.vercel.app'],
         blocklist: [],
       },
       // Ensure proper database query handling
